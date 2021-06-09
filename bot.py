@@ -8,7 +8,9 @@ from discord.ext import commands
 load_dotenv(".env")
 
 # Initializing bot with command prefix.
-client = commands.Bot(command_prefix="!")
+# Intents is need to keep track of user statuses. i.e online/offline
+intents = discord.Intents.all()
+client = commands.Bot(command_prefix="!", intents=intents)
 
 
 # Events
@@ -19,19 +21,22 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    await member.send(f"{member} has joined the server.")
+    channel = discord.utils.get(member.guild.text_channels, name="python-bot")
+    await channel.send(f"{member} has joined the server.")
     print(f"{member} has joined the server.")
 
 
 @client.event
 async def on_member_remove(member):
-    await member.send(f"{member} has joined the server.")
+    channel = discord.utils.get(member.guild.text_channels, name="python-bot")
+    await channel.send(f"{member} has left the server.")
     print(f"{member} has left the server")
 
 
 @client.event
 async def on_message(message):
     print(message.content)
+    print()
     await client.process_commands(message)
 
 
