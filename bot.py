@@ -11,6 +11,8 @@ load_dotenv(".env")
 # Intents is needed to keep track of user statuses. i.e online/offline
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix="!", intents=intents)
+
+# We are removing the default help command and adding our own.
 client.remove_command("help")
 
 
@@ -41,15 +43,21 @@ async def on_message(message):
 
 
 # Commands
-@client.command(pass_context=True)
+@client.command()
 async def help(ctx):
     author = ctx.message.author
 
     embed = discord.Embed(
         color=discord.Color.purple()
     )
-    embed.set_author(name="Help")
-    embed.add_field(name=".ping", value="Returns pong", inline=False)
+
+    embed.set_author(name="Commands:")
+    embed.add_field(name="1. !ping", value="Returns pong with the time it took to respond.", inline=False)
+    embed.add_field(name="2. !8ball", value="Ask a question. It will give a response to the question.", inline=False)
+    embed.add_field(name="3. !clear", value="Clears messages with a specified amount. Default amount is 5", inline=False)
+    embed.add_field(name="4. !kick", value="Kicks the specified user out of the server.", inline=False)
+    embed.add_field(name="5. !ban", value="Bans the specified user out of the server.", inline=False)
+    embed.add_field(name="6. !unban", value="Unbans the specified user out of the server.", inline=False)
 
     await author.send(author, embed=embed)
 
