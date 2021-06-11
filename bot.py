@@ -8,9 +8,10 @@ from discord.ext import commands
 load_dotenv(".env")
 
 # Initializing bot with command prefix.
-# Intents is need to keep track of user statuses. i.e online/offline
+# Intents is needed to keep track of user statuses. i.e online/offline
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix="!", intents=intents)
+client.remove_command("help")
 
 
 # Events
@@ -27,7 +28,7 @@ async def on_member_join(member):
 
 
 @client.event
-async def on_member_remove(member):
+async def on_member_remove(member: discord):
     channel = discord.utils.get(member.guild.text_channels, name="python-bot")
     await channel.send(f"{member} has left the server.")
     print(f"{member} has left the server")
@@ -36,11 +37,23 @@ async def on_member_remove(member):
 @client.event
 async def on_message(message):
     print(message.content)
-    print()
     await client.process_commands(message)
 
 
 # Commands
+@client.command(pass_context=True)
+async def help(ctx):
+    author = ctx.message.author
+
+    embed = discord.Embed(
+        color=discord.Color.purple()
+    )
+    embed.set_author(name="Help")
+    embed.add_field(name=".ping", value="Returns pong", inline=False)
+
+    await author.send(author, embed=embed)
+
+
 @client.command()
 async def ping(ctx):
     await ctx.send(f"Pong! {round(client.latency * 1000)}ms")
@@ -100,6 +113,7 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f"Unbanned {user.mention}")
             return
+
 
 # Bot token
 client.run(os.getenv('BOT_TOKEN'))
