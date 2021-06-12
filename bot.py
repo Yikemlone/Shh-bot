@@ -4,7 +4,8 @@ import random
 from dotenv import load_dotenv
 from discord.ext import commands
 
-# Securing bot token
+
+# Loading bot token
 load_dotenv(".env")
 
 # Initializing bot with command prefix.
@@ -39,12 +40,22 @@ async def on_member_remove(member: discord):
 @client.event
 async def on_message(message):
     print(message.content)
+    # This is needed to make sure the bot will detect when the user is trying a command.
     await client.process_commands(message)
 
 
+@client.event
+async def on_typing(channel, user, when):
+    print(f"Channel {channel}")
+    print(f"User {user}")
+    print(f"When {when}")
+
+    await channel.send(f"{user} shhh. Stop typing.")
+
+
 # Commands
-@client.command()
-async def help(ctx):
+@client.command(aliases=["help"])
+async def _help(ctx):
     author = ctx.message.author
 
     embed = discord.Embed(
@@ -121,7 +132,6 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f"Unbanned {user.mention}")
             return
-
 
 # Bot token
 client.run(os.getenv('BOT_TOKEN'))
