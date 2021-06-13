@@ -1,11 +1,11 @@
+import asyncio
+
 import discord
 import os
 import random
 from dotenv import load_dotenv
 from discord.ext import commands
 
-
-# Loading bot token
 load_dotenv(".env")
 
 # Initializing bot with command prefix.
@@ -16,8 +16,12 @@ client = commands.Bot(command_prefix="!", intents=intents)
 # We are removing the default help command and adding our own.
 client.remove_command("help")
 
+for filename in os.listdir("./cogs"):
+    if filename.endswith(".py") and not "nsfw.py":
+        client.load_extension(f"{filename[:-3]}")
 
-# Events
+
+# # # Events # # #
 @client.event
 async def on_ready():
     print("Bot is ready")
@@ -40,6 +44,8 @@ async def on_member_remove(member: discord):
 @client.event
 async def on_message(message):
     print(message.content)
+    ctx = await client.get_context(message)
+
     # This is needed to make sure the bot will detect when the user is trying a command.
     await client.process_commands(message)
 
@@ -53,7 +59,7 @@ async def on_typing(channel, user, when):
     await channel.send(f"{user} shhh. Stop typing.")
 
 
-# Commands
+# # # Commands # # #
 @client.command(aliases=["help"])
 async def _help(ctx):
     author = ctx.message.author
@@ -65,7 +71,8 @@ async def _help(ctx):
     embed.set_author(name="Commands:")
     embed.add_field(name="1. !ping", value="Returns pong with the time it took to respond.", inline=False)
     embed.add_field(name="2. !8ball", value="Ask a question. It will give a response to the question.", inline=False)
-    embed.add_field(name="3. !clear", value="Clears messages with a specified amount. Default amount is 5", inline=False)
+    embed.add_field(name="3. !clear", value="Clears messages with a specified amount. Default amount is 5",
+                    inline=False)
     embed.add_field(name="4. !kick", value="Kicks the specified user out of the server.", inline=False)
     embed.add_field(name="5. !ban", value="Bans the specified user out of the server.", inline=False)
     embed.add_field(name="6. !unban", value="Unbans the specified user out of the server.", inline=False)
@@ -132,6 +139,41 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f"Unbanned {user.mention}")
             return
+
+
+@client.command()
+async def isGifAnnoy(ctx, message):
+    if "on" in message:
+        await ctx.send("Gif Annoy is now on")
+        return True
+    elif "off" in message:
+        await ctx.send("Gif Annoy is now off")
+        return False
+    else:
+        await ctx.send("You must enter \"on\" or \"off\"")
+        return False
+
+
+@client.command()
+async def load(ctx, extension):
+    client.load_extension(f"cogs.{extension}")
+
+
+@client.command()
+async def unload(ctx, extension):
+    client.unload_extension(f"cogs.{extension}")
+
+
+@client.command()
+async def reload(ctx, extension):
+    client.unload_extension(f"cogs.{extension}")
+    client.load_extension(f"cogs.{extension}")
+
+
+# # # Functions # # #
+async def postGif(message):
+    print(f"This is messaged striped: {message.strip()}")
+
 
 # Bot token
 client.run(os.getenv('BOT_TOKEN'))
