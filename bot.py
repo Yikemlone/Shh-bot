@@ -1,5 +1,4 @@
-import asyncio
-
+# import asyncio
 import discord
 import os
 import random
@@ -17,8 +16,8 @@ client = commands.Bot(command_prefix="!", intents=intents)
 client.remove_command("help")
 
 for filename in os.listdir("./cogs"):
-    if filename.endswith(".py") and not "nsfw.py":
-        client.load_extension(f"{filename[:-3]}")
+    if filename.endswith(".py") and filename != "nsfw.py":
+        client.load_extension(f"cogs.{filename[:-3]}")
 
 
 # # # Events # # #
@@ -43,8 +42,10 @@ async def on_member_remove(member: discord):
 
 @client.event
 async def on_message(message):
-    print(message.content)
+    if message.author.bot:
+        return
     ctx = await client.get_context(message)
+    print(f"This is from bot.py: {message.content}")
 
     # This is needed to make sure the bot will detect when the user is trying a command.
     await client.process_commands(message)
