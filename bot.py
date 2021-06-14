@@ -171,9 +171,9 @@ async def reload(ctx, extension):
     client.load_extension(f"cogs.{extension}")
 
 
-# # # Functions # # #
-async def postGif(message):
-    print(f"This is messaged striped: {message.strip()}")
+@client.command()
+async def ez(ctx):
+    await ctx.send("ggez no re, bot :)")
 
 
 # Bot token
