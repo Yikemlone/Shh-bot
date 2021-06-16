@@ -10,7 +10,7 @@ class GifSpam(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self.gifOn = True
+        self.gifOn = False
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -52,6 +52,7 @@ class GifSpam(commands.Cog):
         gifData = gif["data"]
 
         # Dict inside of the list
+        print(gifData)
         gifDataDict = gifData[0]
 
         await ctx.send(gifDataDict["url"])

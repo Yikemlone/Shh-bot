@@ -1,4 +1,7 @@
 # import asyncio
+import asyncio
+import datetime
+
 import discord
 import os
 import random
@@ -10,7 +13,7 @@ load_dotenv(".env")
 # Initializing bot with command prefix.
 # Intents is needed to keep track of user statuses. i.e online/offline
 intents = discord.Intents.all()
-client = commands.Bot(command_prefix="!", intents=intents)
+client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status.do_not_disturb)
 
 # We are removing the default help command and adding our own.
 client.remove_command("help")
@@ -23,6 +26,7 @@ for filename in os.listdir("./cogs"):
 # # # Events # # #
 @client.event
 async def on_ready():
+    await client.change_presence(activity=discord.Game("with Vyx's Titties"), status=discord.Status.do_not_disturb)
     print("Bot is ready")
 
 
@@ -44,20 +48,32 @@ async def on_member_remove(member: discord):
 async def on_message(message):
     if message.author.bot:
         return
-    ctx = await client.get_context(message)
-    print(f"This is from bot.py: {message.content}")
 
+    ctx = await client.get_context(message)
     # This is needed to make sure the bot will detect when the user is trying a command.
     await client.process_commands(message)
+
+    cache = client.cached_messages
+    print(cache[0].content)
 
 
 @client.event
 async def on_typing(channel, user, when):
-    print(f"Channel {channel}")
-    print(f"User {user}")
-    print(f"When {when}")
 
-    await channel.send(f"{user} shhh. Stop typing.")
+    beforeTime = when.time()
+    await asyncio.sleep(20)
+    timeAfter = datetime.datetime.now().time()
+
+    if timeAfter > beforeTime:
+        await channel.send(f"{user} what are you typing? Stop it.")
+
+
+@client.event
+async def on_message_edit(before, after):
+    print(before)
+    print(after)
+    ctx = await client.get_context(before)
+    await ctx.send("Look who's trying to hide something :)")
 
 
 # # # Commands # # #
@@ -72,11 +88,18 @@ async def _help(ctx):
     embed.set_author(name="Commands:")
     embed.add_field(name="1. !ping", value="Returns pong with the time it took to respond.", inline=False)
     embed.add_field(name="2. !8ball", value="Ask a question. It will give a response to the question.", inline=False)
-    embed.add_field(name="3. !clear", value="Clears messages with a specified amount. Default amount is 5",
+    embed.add_field(name="3. !ez", value="Prints a very original tag line. :)",
                     inline=False)
-    embed.add_field(name="4. !kick", value="Kicks the specified user out of the server.", inline=False)
-    embed.add_field(name="5. !ban", value="Bans the specified user out of the server.", inline=False)
-    embed.add_field(name="6. !unban", value="Unbans the specified user out of the server.", inline=False)
+
+    embed.add_field(name="Moderator Commands:", value=embed.Empty)
+    embed.add_field(name="1. !kick", value="Kicks the specified user out of the server.", inline=False)
+    embed.add_field(name="2. !ban", value="Bans the specified user out of the server.", inline=False)
+    embed.add_field(name="3. !unban", value="Unbans the specified user out of the server.", inline=False)
+    embed.add_field(name="4. !load", value="Loads a cog file.", inline=False)
+    embed.add_field(name="5. !unload", value="Unloads a cog file.", inline=False)
+    embed.add_field(name="6. !reload", value="Reloads a cog file.", inline=False)
+    embed.add_field(name="7. !clear", value="Clears messages with a specified amount. Default amount is 5",
+                    inline=False)
 
     await author.send(author, embed=embed)
 
@@ -140,19 +163,6 @@ async def unban(ctx, *, member):
             await ctx.guild.unban(user)
             await ctx.send(f"Unbanned {user.mention}")
             return
-
-
-@client.command()
-async def isGifAnnoy(ctx, message):
-    if "on" in message:
-        await ctx.send("Gif Annoy is now on")
-        return True
-    elif "off" in message:
-        await ctx.send("Gif Annoy is now off")
-        return False
-    else:
-        await ctx.send("You must enter \"on\" or \"off\"")
-        return False
 
 
 @client.command()
