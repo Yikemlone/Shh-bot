@@ -52,7 +52,9 @@ class GifSpam(commands.Cog):
         gifData = gif["data"]
 
         # Dict inside of the list
-        print(gifData)
+        if len(gifData) == 0:
+            return
+
         gifDataDict = gifData[0]
 
         await ctx.send(gifDataDict["url"])

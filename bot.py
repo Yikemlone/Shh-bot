@@ -13,6 +13,9 @@ load_dotenv(".env")
 # Initializing bot with command prefix.
 # Intents is needed to keep track of user statuses. i.e online/offline
 intents = discord.Intents.all()
+
+# VCBot = discord.VoiceClient
+
 client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status.do_not_disturb)
 
 # We are removing the default help command and adding our own.
@@ -32,16 +35,19 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    channel = discord.utils.get(member.guild.text_channels, name="python-bot")
+    channel = discord.utils.get(member.guild.text_channels, name="general-text")
     await channel.send(f"{member} has joined the server.")
-    print(f"{member} has joined the server.")
 
 
 @client.event
 async def on_member_remove(member: discord):
-    channel = discord.utils.get(member.guild.text_channels, name="python-bot")
-    await channel.send(f"{member} has left the server.")
-    print(f"{member} has left the server")
+    ctx = await client.get_context(member)
+    channel = member.channel.name
+
+    channelSend = discord.utils.get(ctx.guild.text_channels, name=channel)
+
+    # channel = discord.utils.get(member.guild.text_channels, name="general-text")
+    await channelSend.send(f"{member} has left the server.")
 
 
 @client.event
@@ -50,29 +56,36 @@ async def on_message(message):
         return
 
     ctx = await client.get_context(message)
+
+    # for emoji in client.emojis:
+    #     await ctx.send(emoji)
+
     # This is needed to make sure the bot will detect when the user is trying a command.
     await client.process_commands(message)
-
-    cache = client.cached_messages
-    print(cache[0].content)
 
 
 @client.event
 async def on_typing(channel, user, when):
 
     beforeTime = when.time()
-    await asyncio.sleep(20)
+    # await asyncio.sleep(20)
     timeAfter = datetime.datetime.now().time()
 
-    if timeAfter > beforeTime:
-        await channel.send(f"{user} what are you typing? Stop it.")
+    # if timeAfter > beforeTime:
+    #     await channel.send(f"{user} what are you typing? Stop it.")
 
 
 @client.event
 async def on_message_edit(before, after):
-    print(before)
-    print(after)
+    if before.author.bot:
+        return
+
     ctx = await client.get_context(before)
+
+    print(type(before))
+    print(before.content)
+    print(after.content)
+
     await ctx.send("Look who's trying to hide something :)")
 
 
@@ -142,6 +155,11 @@ async def clear(ctx, amount=6):
 
 
 @client.command()
+async def clearAll(ctx):
+    await ctx.channel.purge(limit=1000000)
+
+
+@client.command()
 async def kick(ctx, member: discord.Member, *, reason=None):
     await member.kick(reason=reason)
 
@@ -182,9 +200,29 @@ async def reload(ctx, extension):
 
 
 @client.command()
+async def spam(ctx):
+    f = open(os.path.join("files/beemovie.txt"), newline=None)
+
+    for i in f:
+        if i == "\n":
+            continue
+
+        f.readline()
+        await asyncio.sleep(1)
+        await ctx.send(i)
+
+
+@client.command()
 async def ez(ctx):
     await ctx.send("ggez no re, bot :)")
 
+
+@client.command()
+async def join(ctx):
+
+    vc = discord.utils.get(ctx.guild.voice_channels, name="General")
+
+    await vc.connect()
 
 # Bot token
 client.run(os.getenv('BOT_TOKEN'))
