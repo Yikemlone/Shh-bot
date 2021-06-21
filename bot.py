@@ -1,7 +1,5 @@
-# import asyncio
 import asyncio
 import datetime
-
 import discord
 import os
 import random
@@ -54,11 +52,6 @@ async def on_member_remove(member: discord):
 async def on_message(message):
     if message.author.bot:
         return
-
-    ctx = await client.get_context(message)
-
-    # for emoji in client.emojis:
-    #     await ctx.send(emoji)
 
     # This is needed to make sure the bot will detect when the user is trying a command.
     await client.process_commands(message)
@@ -148,41 +141,6 @@ async def _8ball(ctx, *, question):
     await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
 
-# Setting a default amount of messages to clear in the parameters
-@client.command()
-async def clear(ctx, amount=6):
-    await ctx.channel.purge(limit=amount)
-
-
-@client.command()
-async def clearAll(ctx):
-    await ctx.channel.purge(limit=1000000)
-
-
-@client.command()
-async def kick(ctx, member: discord.Member, *, reason=None):
-    await member.kick(reason=reason)
-
-
-@client.command()
-async def ban(ctx, member: discord.Member, *, reason=None):
-    await member.ban(reason=reason)
-
-
-@client.command()
-async def unban(ctx, *, member):
-    banned_users = await ctx.guild.bans()
-    member_name, member_discriminator = member.split("#")
-
-    for ban_entry in banned_users:
-        user = ban_entry.user
-
-        if (user.name, user.discriminator) == (member_name, member_discriminator):
-            await ctx.guild.unban(user)
-            await ctx.send(f"Unbanned {user.mention}")
-            return
-
-
 @client.command()
 async def load(ctx, extension):
     client.load_extension(f"cogs.{extension}")
@@ -199,30 +157,30 @@ async def reload(ctx, extension):
     client.load_extension(f"cogs.{extension}")
 
 
-@client.command()
-async def spam(ctx):
-    f = open(os.path.join("files/beemovie.txt"), newline=None)
+file = open(os.path.join("files/beemovie.txt"), newline=None)
 
-    for i in f:
+
+@client.command()
+@commands.has_role("Spammer")
+async def spam(ctx):
+    for i in file:
         if i == "\n":
             continue
 
-        f.readline()
+        file.readline()
         await asyncio.sleep(1)
         await ctx.send(i)
+
+
+@client.command()
+async def stopSpam(ctx):
+    file.close()
 
 
 @client.command()
 async def ez(ctx):
     await ctx.send("ggez no re, bot :)")
 
-
-@client.command()
-async def join(ctx):
-
-    vc = discord.utils.get(ctx.guild.voice_channels, name="General")
-
-    await vc.connect()
 
 # Bot token
 client.run(os.getenv('BOT_TOKEN'))
