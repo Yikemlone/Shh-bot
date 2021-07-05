@@ -19,8 +19,6 @@ class GifSpam(commands.Cog):
 
         ctx = await self.client.get_context(message)
 
-        # await self.japanese(ctx, message.content.lower())
-
         if self.gifOn:
             await self.postGif(message)
 
@@ -60,26 +58,6 @@ class GifSpam(commands.Cog):
         gifDataDict = gifData[0]
 
         await ctx.send(gifDataDict["url"])
-
-    async def japanese(self, ctx, word):
-        url = "https://jisho.org/api/v1/search/words?keyword="
-        response = requests.get(url + word)
-
-        content = response.json()
-
-        if content["meta"]["status"] != 200:
-            await ctx.send("Error: Could not communicate with API")
-            return
-
-        if len(content["data"]) == 0:
-            await ctx.send("")
-
-        print(content["data"][0]["jlpt"])
-
-        output = "Kanji: " + (content["data"][0]["japanese"][0]["word"]) + "\t" \
-                 + "Hiragana: " + (content["data"][0]["japanese"][0]["reading"])
-
-        await ctx.send(output)
 
 
 def setup(client):
