@@ -1,4 +1,5 @@
 import os
+import random
 import urllib
 import requests
 from urllib import parse
@@ -17,8 +18,6 @@ class GifSpam(commands.Cog):
         if message.author.bot:
             return
 
-        ctx = await self.client.get_context(message)
-
         if self.gifOn:
             await self.postGif(message)
 
@@ -30,6 +29,7 @@ class GifSpam(commands.Cog):
             self.gifOn = True
 
     async def postGif(self, message):
+
         load_dotenv(".env")
 
         ctx = await self.client.get_context(message)
@@ -40,24 +40,17 @@ class GifSpam(commands.Cog):
         params = urllib.parse.urlencode({
             "q": f"{word}",
             "api_key": os.getenv("GIF_API_KEY"),
-            "limit": "1"
+            "limit": "20"
         })
 
         response = (requests.get(url + params))
-
-        # Returns Dict type
         gif = response.json()
-
-        # List type of length 1
         gifData = gif["data"]
 
-        # Dict inside of the list
         if len(gifData) == 0:
             return
 
-        gifDataDict = gifData[0]
-
-        await ctx.send(gifDataDict["url"])
+        await ctx.send(random.choice(gifData)["url"])
 
 
 def setup(client):

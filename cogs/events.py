@@ -21,7 +21,7 @@ class Events(commands.Cog):
             return
 
         if user is self.currentUser:
-            await channel.send(f"{user} stop typing.")
+            await channel.send(f"{user.mention} stop typing.")
         else:
             self.currentUser = ""
 
