@@ -40,7 +40,8 @@ class GifSpam(commands.Cog):
         params = urllib.parse.urlencode({
             "q": f"{word}",
             "api_key": os.getenv("GIF_API_KEY"),
-            "limit": "20"
+            "limit": "20",
+            "rating": "pg"
         })
 
         response = (requests.get(url + params))

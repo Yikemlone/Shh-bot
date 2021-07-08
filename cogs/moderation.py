@@ -1,10 +1,6 @@
 import discord
 from discord.ext import commands
-
-
-def isServerOwner(ctx):
-    if ctx.author.id == 401415617032486922:
-        return True
+from bot import isServerOwner
 
 
 class Moderation(commands.Cog):
@@ -12,7 +8,6 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    # Setting a default amount of messages to clear in the parameters
     @commands.command()
     @commands.check(isServerOwner)
     async def clear(self, ctx, amount=6):

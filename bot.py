@@ -16,15 +16,21 @@ for filename in os.listdir("cogs"):
         client.load_extension(f"cogs.{filename[:-3]}")
 
 
+def isServerOwner(ctx):
+    if ctx.author.id == 401415617032486922:
+        return True
+
+
 @client.event
 async def on_message(message):
     if message.author.bot:
         return
-    # This is needed to make sure the bot will detect when the user is trying a command.
+
     await client.process_commands(message)
 
 
 @client.command()
+@client.check(isServerOwner)
 async def load(ctx, extension):
     client.load_extension(f"cogs.{extension}")
 
