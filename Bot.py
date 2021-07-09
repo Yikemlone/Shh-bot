@@ -2,7 +2,7 @@ import discord
 import os
 from dotenv import load_dotenv
 from discord.ext import commands
-from util.customhelpcommand import CustomHelpCommand
+from util.CustomHelpCommand import CustomHelpCommand
 
 load_dotenv(".env")
 
@@ -12,7 +12,7 @@ client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status
                       help_command=CustomHelpCommand())
 
 for filename in os.listdir("cogs"):
-    if filename.endswith(".py") and filename != "nsfw.py":
+    if filename.endswith(".py") and filename != "Nsfw.py":
         client.load_extension(f"cogs.{filename[:-3]}")
 
 

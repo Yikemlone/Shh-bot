@@ -7,7 +7,7 @@ from discord.ext import commands
 class BasicCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.file = open(os.path.join("files/beemovie.txt"), newline=None)
+        self.file = open(os.path.join("text_files/beemovie.txt"), newline=None)
 
     @commands.command()
     async def ping(self, ctx):

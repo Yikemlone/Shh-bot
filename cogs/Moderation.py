@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from bot import isServerOwner
+from Bot import isServerOwner
 
 
 class Moderation(commands.Cog):
