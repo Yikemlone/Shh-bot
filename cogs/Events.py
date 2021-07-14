@@ -12,8 +12,9 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        await self.client.change_presence(activity=discord.Game("with Vyx's Titties"), status=discord.Status.do_not_disturb)
         print("Bot is ready")
+        await self.client.change_presence(activity=discord.Game("with Vyx's Titties"),
+                                          status=discord.Status.do_not_disturb)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -21,16 +22,19 @@ class Events(commands.Cog):
             return
 
         ctx = await self.client.get_context(before)
-        messageAuthor = before.author.mention
+        message_author = before.author.mention
 
         reply = f'Look who\'s trying to hide something :) ' \
-                f'\n\n{messageAuthor}\'s message before: "{before.content}"' \
-                f'\n{messageAuthor}\'s message after: "{after.content}"'
+                f'\n\n{message_author}\'s message before: "{before.content}"' \
+                f'\n{message_author}\'s message after: "{after.content}"'
 
         await ctx.send(reply)
 
     @commands.Cog.listener()
     async def on_typing(self, channel, user, when):
+        if user.bot:
+            return
+
         if self.currentUser == "":
             self.currentUser = user
             self.timeStartedTyping = when.time()

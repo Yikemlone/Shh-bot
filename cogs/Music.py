@@ -1,5 +1,6 @@
 import youtube_dl
 import discord
+from discord import ClientException
 from discord.ext import commands
 
 
@@ -9,9 +10,13 @@ class Music(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def join(self, ctx):
-        vc = discord.utils.get(ctx.guild.voice_channels, name="General")
-        await vc.connect()
+    async def join(self, ctx: discord):
+        channel = discord.utils.get(ctx.guild.voice_channels, name="General")
+
+        try:
+            await channel.connect()
+        except ClientException:
+            await ctx.send(f"{ctx.author.mention} the bot is already in a VC.")
 
     @commands.command()
     async def leave(self, ctx):
@@ -20,7 +25,8 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, url):
-        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+                          'options': '-vn'}
         YT_DL_OPTIONS = {'format': 'bestaudio'}
         vc = ctx.voice_client
 

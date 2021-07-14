@@ -1,21 +1,24 @@
 import asyncio
 import random
 import os
+
+import discord
 from discord.ext import commands
+from discord.ext.commands import Context
 
 
 class BasicCommands(commands.Cog):
-    def __init__(self, client):
+    def __init__(self, client: discord):
         self.client = client
-        self.file = open(os.path.join("text_files/beemovie.txt"), newline=None)
+        self.file = open(os.path.join("text_files", "beemovie.txt"), newline=None)
 
     @commands.command()
-    async def ping(self, ctx):
+    async def ping(self, ctx: Context):
         await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 
     # Creating an alias for this command
     @commands.command(aliases=["8ball"])
-    async def _8ball(self, ctx, *, question):
+    async def _8ball(self, ctx, *, question: str):
         responses = ["It is Certain.",
                      "It is decidedly so."
                      "Without a doubt.", "Yes definitely.",
@@ -39,12 +42,12 @@ class BasicCommands(commands.Cog):
         await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
     @commands.command()
-    async def ez(self, ctx):
+    async def ez(self, ctx: Context):
         await ctx.send("ggez no re, bot :)")
 
     @commands.command()
     @commands.has_role("Spammer")
-    async def spam(self, ctx):
+    async def spam(self, ctx: Context):
         for i in self.file:
             if i == "\n":
                 continue
@@ -54,7 +57,7 @@ class BasicCommands(commands.Cog):
             await ctx.send(i)
 
     @commands.command()
-    async def stopSpam(self, ctx):
+    async def stopSpam(self, ctx: Context):
         self.file.close()
 
 

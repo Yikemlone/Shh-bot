@@ -1,34 +1,33 @@
 import os
 import random
 import urllib
+import discord
 import requests
 from urllib import parse
 from discord.ext import commands
+from discord.ext.commands import Context
 from dotenv import load_dotenv
 
 
 class GifSpam(commands.Cog):
 
-    def __init__(self, client):
+    def __init__(self, client: discord):
         self.client = client
-        self.gifOn = False
+        self.gif_on = False
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord):
         if message.author.bot:
             return
 
-        if self.gifOn:
-            await self.postGif(message)
+        if self.gif_on:
+            await self.post_gif(message)
 
     @commands.command()
-    async def gif(self, ctx):
-        if self.gifOn:
-            self.gifOn = False
-        else:
-            self.gifOn = True
+    async def gif(self, ctx: Context):
+        self.gif_on = False if self.gif_on else True
 
-    async def postGif(self, message):
+    async def post_gif(self, message: discord):
 
         load_dotenv(".env")
 
@@ -46,12 +45,12 @@ class GifSpam(commands.Cog):
 
         response = (requests.get(url + params))
         gif = response.json()
-        gifData = gif["data"]
+        gif_data = gif["data"]
 
-        if len(gifData) == 0:
+        if len(gif_data) == 0:
             return
 
-        await ctx.send(random.choice(gifData)["url"])
+        await ctx.send(random.choice(gif_data)["url"])
 
 
 def setup(client):
