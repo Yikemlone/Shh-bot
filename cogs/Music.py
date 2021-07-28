@@ -17,26 +17,22 @@ class Music(commands.Cog):
         self.YT_DL_OPTIONS = {'format': 'bestaudio'}
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
                                'options': '-vn'}
+        self.queue = []
 
     async def move_vc(self, ctx, vc_name):
         await self.leave(ctx)
         self.channel = discord.utils.get(ctx.guild.voice_channels, name=vc_name)
         self.voice_client = await self.channel.connect()
 
-    async def is_in_vc(self, ctx, vc_name):
-        if self.channel is not None and vc_name != self.channel and self.voice_client.is_connected():
-            await self.move_vc(ctx, vc_name)
-            return True
-        else:
-            return False
-
-    async def join(self, ctx: discord):
+    async def join(self, ctx):
         try:
             vc_name = ctx.author.voice.channel.name
 
-            if not await self.is_in_vc(ctx, vc_name):
+            if self.channel is None:
                 self.channel = discord.utils.get(ctx.guild.voice_channels, name=vc_name)
                 self.voice_client = await self.channel.connect()
+            elif vc_name != str(self.channel):
+                await self.move_vc(ctx, vc_name)
 
         except ClientException:
             await ctx.send(f"{ctx.author.mention} the bot is already the current VC.")
@@ -70,27 +66,44 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, url):
-        # There is a bug where the bot will leave the VC if !play is called again when it's already in the same VC.
-        # We will need to check and make sure the bot is not playing before we play a song, and if it is, we should add
-        # it to a queue so it can be played next.
-        #   * Make it not leave the VC if it's the same VC
-        #   * Make queue
-
         if "http" not in url:
             url = self.get_link(url)
 
+        self.queue.append(url)
+
         await self.join(ctx)
 
-        if self.channel is not None:
-            with youtube_dl.YoutubeDL(self.YT_DL_OPTIONS) as ydl:
-                info = ydl.extract_info(url, download=False)
-                url2 = info["formats"][0]["url"]
-                source = await discord.FFmpegOpusAudio.from_probe(url2, **self.FFMPEG_OPTIONS)
-                self.voice_client.play(source)
+        if not self.voice_client.is_playing():
+            await self.play_queue()
 
     @commands.command()
     async def pause(self, ctx):
         self.voice_client.pause()
+
+    async def play_queue(self):
+        for index, song in enumerate(self.queue):
+            print(index)
+            await self.play_song(song)
+            self.voice_client.stop()
+
+            print(self.queue)
+            self.queue.pop(index)
+            print(self.queue)
+            index -= 1
+
+    async def play_song(self, song):
+        try:
+            with youtube_dl.YoutubeDL(self.YT_DL_OPTIONS) as ydl:
+                info = ydl.extract_info(song, download=False)
+                video_length = info["duration"]
+                url2 = info["formats"][0]["url"]
+                source = await discord.FFmpegOpusAudio.from_probe(url2, **self.FFMPEG_OPTIONS)
+                self.voice_client.play(source)
+
+            await asyncio.sleep(video_length + 3)
+
+        except ClientException as e:
+            print(e)
 
 
 def setup(client):
