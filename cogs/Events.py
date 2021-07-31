@@ -38,14 +38,12 @@ class Events(commands.Cog):
         if self.currentUser == "":
             self.currentUser = user
             self.timeStartedTyping = when.time()
-            await asyncio.sleep(30)
+            await asyncio.sleep(60)
 
-            return
-
-        if user is self.currentUser:
-            await channel.send(f"{user.mention} stop typing.")
-        else:
-            self.currentUser = ""
+        # if user is self.currentUser:
+        #     # await channel.send(f"{user.mention} stop typing.")
+        # else:
+        #     self.currentUser = ""
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
