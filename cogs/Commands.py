@@ -56,6 +56,19 @@ class BasicCommands(commands.Cog):
     async def stop_spam(self, ctx):
         self.file.close()
 
+    @commands.command(aliases=["type"])
+    async def _type(self, ctx):
+        messages = {
+            "avatar": ctx.author.avatar_url,
+            "message": "This you?",
+            "GIF": "https://tenor.com/view/kermit-the-frog-drive-driving-gif-12873213"
+        }
+
+        for message in messages:
+            await ctx.trigger_typing()
+            await asyncio.sleep(1.5)
+            await ctx.send(messages[message])
+
 
 def setup(client):
     client.add_cog(BasicCommands(client))

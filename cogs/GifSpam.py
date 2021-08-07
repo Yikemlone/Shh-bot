@@ -1,22 +1,22 @@
 import os
 import random
 import urllib
-import discord
 import requests
 from urllib import parse
 from discord.ext import commands
-from discord.ext.commands import Context
 from dotenv import load_dotenv
 
 
 class GifSpam(commands.Cog):
 
-    def __init__(self, client: discord):
+    load_dotenv(".env")
+
+    def __init__(self, client):
         self.client = client
         self.gif_on = False
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord):
+    async def on_message(self, message):
         if message.author.bot:
             return
 
@@ -24,12 +24,10 @@ class GifSpam(commands.Cog):
             await self.post_gif(message)
 
     @commands.command()
-    async def gif(self, ctx: Context):
+    async def gif(self, ctx):
         self.gif_on = False if self.gif_on else True
 
-    async def post_gif(self, message: discord):
-
-        load_dotenv(".env")
+    async def post_gif(self, message):
 
         ctx = await self.client.get_context(message)
         word = message.content
