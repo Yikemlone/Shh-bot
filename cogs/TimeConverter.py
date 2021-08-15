@@ -34,5 +34,6 @@ class TimeConverter(commands.Cog):
     async def convert_time(self, time):
         """Returns the time passed in converted to user local time."""
 
+
 def setup(client):
     client.add_cog(TimeConverter(client))

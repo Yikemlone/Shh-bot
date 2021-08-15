@@ -114,29 +114,49 @@ class Music(commands.Cog):
         if self.looping:
             self.looping = False
             self.queue = []
-            await ctx.send(f"{ctx.author.mention} now no longer looping songs.")
+            await ctx.send(f"{ctx.author.mention} no longer looping songs.")
         else:
             self.looping = True
-            await ctx.send(f"{ctx.author.mention} now looping songs.")
+            await ctx.send(f"{ctx.author.mention} looping songs.")
+
+    @commands.command()
+    async def queue(self, ctx):
+        """Will print out the queue as a discord embed."""
+
+        image = discord.File(os.path.join("text_files", "Skelly-thumbs-up.gif"), filename="Skelly-thumbs-up.gif")
+
+        embed = discord.Embed(
+            title="Song Queue",
+            color=discord.Color.gold(),
+        )
+
+        for index, song in enumerate(self.radio_songs):
+            artist_name = self.radio_songs[index]["name"]
+            song_name = self.radio_songs[index]["song"]
+            embed.add_field(name="Artist", value=artist_name, inline=True)
+            embed.add_field(name="Song", value=song_name, inline=False)
+
+
+        await ctx.send(file=image)
+        await ctx.send(embed=embed)
 
     async def get_link(self, ctx, video_name):
         """Returns a link of the top search video with the name passed in. Else it returns None"""
 
-        youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
+        YOUTUBE = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
         video_name = video_name.replace(" ", "+")
 
         try:
-
             self.store_for_radio_mode(video_name)
 
-            request = youtube.search().list(
+            request = YOUTUBE.search().list(
                 part="snippet",
                 maxResults=1,
                 q=f"{video_name}"
             )
 
-            request = request.execute()
-            video_id = request["items"][0]["id"]["videoId"]
+            response = request.execute()
+            video_id = response["items"][0]["id"]["videoId"]
 
             return f"https://www.youtube.com/watch?v={video_id}"
 
@@ -156,8 +176,8 @@ class Music(commands.Cog):
                 info = ydl.extract_info(song, download=False)
                 song_url = info["formats"][0]["url"]
                 self.song_source = await discord.FFmpegOpusAudio.from_probe(song_url, **self.FFMPEG_OPTIONS)
-                self.voice_client.play(self.song_source)
 
+                self.voice_client.play(self.song_source)
                 await asyncio.sleep(info["duration"] + 2)
 
                 self.update_queue()
@@ -174,13 +194,9 @@ class Music(commands.Cog):
         pass
 
     def store_for_radio_mode(self, song):
-        """This will get the artist and genres for the radio mode and store them in a list."""
+        """This will get the artist and track for the radio mode and store them in a list."""
 
         SPOTIFY_URL = "https://api.spotify.com/v1/search?"
-
-        header = {
-            "Authorization": f"Bearer {os.getenv('SPOTIFY_TOKEN')}"
-        }
 
         request = urllib.parse.urlencode({
             "q": f"{song}",
@@ -188,58 +204,50 @@ class Music(commands.Cog):
             "limit": "1"
         })
 
-        try:
-            self.set_spotify_auth()
+        valid_token = False
 
-            # if len(os.getenv("SPOTIFY_TOKEN")) <= 0:
-            #     return
+        while not valid_token:
+            try:
 
-            response = requests.get(SPOTIFY_URL + request, headers=header)
+                header = {
+                    "Authorization": f"Bearer {os.getenv('SPOTIFY_TOKEN')}"
+                }
 
-            data = response.json()
+                response = requests.get(SPOTIFY_URL + request, headers=header).json()
 
-            artist_name = data["tracks"]["items"][0]["album"]["artists"][0]["name"]
-            song_name = data["tracks"]["items"][0]["album"]["name"]
+                artist_name = response["tracks"]["items"][0]["album"]["artists"][0]["name"]
+                song_name = response["tracks"]["items"][0]["album"]["name"]
 
-            self.radio_songs.append({
-                "name": artist_name,
-                "song": song_name,
-            })
+                self.radio_songs.append({
+                    "name": artist_name,
+                    "song": song_name,
+                })
 
-            print(song_name)
-            print(artist_name)
+                valid_token = True
 
-        except Exception as ex:
-            print(ex)
+            except KeyError:
+                self.set_spotify_auth()
 
     @staticmethod
     def set_spotify_auth():
         """Will set a new token of authorization from spotify."""
 
-        spotify_get_url = "https://accounts.spotify.com/authorize"
+        URL = "https://accounts.spotify.com/api/token"
+        CLIENT_ID = os.getenv('SPOTIFY_ID')
+        CLIENT_SECRET = os.getenv('SPOTIFY_SECRET')
 
-        request = urllib.parse.urlencode({
-            "client_id": f"{os.getenv('SPOTIFY_SECRET')}",
-            "response_type": "token",
-            "redirect_uri": "http://localhost/"
-        })
+        body_params = {'grant_type': 'client_credentials'}
 
-        try:
-            response = requests.get(spotify_get_url + request)
+        response = requests.post(URL, data=body_params, auth=(CLIENT_ID, CLIENT_SECRET))
 
-            print(response)
+        data = response.json()
 
-            data = response.json()
+        os.environ["SPOTIFY_TOKEN"] = data["access_token"]
 
-            print(data)
-
-            os.environ["SPOTIFY_TOKEN"] = data["access_token"]
-
-            if len(data) > 2:
-                dotenv.set_key(".env", "SPOTIFY_TOKEN", os.environ["SPOTIFY_TOKEN"])
-
-        except Exception as ex:
-            raise ex
+        if response.status_code == 200:
+            dotenv.set_key(".env", "SPOTIFY_TOKEN", os.environ["SPOTIFY_TOKEN"])
+        else:
+            return
 
 
 def setup(client):
