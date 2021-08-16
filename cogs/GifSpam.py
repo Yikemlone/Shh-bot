@@ -1,10 +1,7 @@
-import os
 import random
-import urllib
-import requests
-from urllib import parse
 from discord.ext import commands
 from dotenv import load_dotenv
+from util.GiphyConnection import GiphyConnection
 
 
 class GifSpam(commands.Cog):
@@ -17,6 +14,7 @@ class GifSpam(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        """Will check if the bot should post gifs."""
         if message.author.bot:
             return
 
@@ -25,25 +23,14 @@ class GifSpam(commands.Cog):
 
     @commands.command()
     async def gif(self, ctx):
+        """Toggles the bot on and off from posting gifs."""
         self.gif_on = False if self.gif_on else True
 
     async def post_gif(self, message):
-
+        """Will post a gif in the server"""
         ctx = await self.client.get_context(message)
         word = message.content
-
-        url = "http://api.giphy.com/v1/gifs/search?"
-
-        params = urllib.parse.urlencode({
-            "q": f"{word}",
-            "api_key": os.getenv("GIF_API_KEY"),
-            "limit": "20",
-            "rating": "pg"
-        })
-
-        response = (requests.get(url + params))
-        gif = response.json()
-        gif_data = gif["data"]
+        gif_data = GiphyConnection.get_data(word)
 
         if len(gif_data) == 0:
             return
