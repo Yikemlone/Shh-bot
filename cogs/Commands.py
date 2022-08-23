@@ -70,5 +70,5 @@ class BasicCommands(commands.Cog):
             await ctx.send(messages[message])
 
 
-def setup(client):
-    client.add_cog(BasicCommands(client))
+async def setup(client):
+    await client.add_cog(BasicCommands(client))

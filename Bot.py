@@ -1,18 +1,22 @@
+
 import discord
 import os
 from dotenv import load_dotenv
 from discord.ext import commands
 from util.CustomHelpCommand import CustomHelpCommand
+import asyncio
 
 load_dotenv(".env")
 intents = discord.Intents.all()
+# intents.message_content = True
 
 client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status.do_not_disturb,
                       help_command=CustomHelpCommand(), voice_client=discord.VoiceClient)
 
-for filename in os.listdir("cogs"):
-    if filename.endswith(".py") and filename != "Nsfw.py":
-        client.load_extension(f"cogs.{filename[:-3]}")
+async def load_extensions():
+    for filename in os.listdir("cogs"):
+        if filename.endswith(".py") and filename != "Nsfw.py":
+           await client.load_extension(f"cogs.{filename[:-3]}")
 
 
 # def is_server_owner(ctx):
@@ -31,20 +35,26 @@ async def on_message(message):
 @client.command()
 # @client.check(is_server_owner)
 async def load(ctx, extension):
-    client.load_extension(f"cogs.{extension}")
+    await client.load_extension(f"cogs.{extension}")
 
 
 @client.command()
 # @client.check(is_server_owner)
 async def unload(ctx, extension):
-    client.unload_extension(f"cogs.{extension}")
+   await client.unload_extension(f"cogs.{extension}")
 
 
 @client.command()
 # @client.check(is_server_owner)
 async def reload(ctx, extension):
-    client.unload_extension(f"cogs.{extension}")
-    client.load_extension(f"cogs.{extension}")
+   await client.unload_extension(f"cogs.{extension}")
+   await client.load_extension(f"cogs.{extension}")
 
-# Bot token
-client.run(os.getenv('BOT_TOKEN'))
+
+async def main():
+    async with client:
+        await load_extensions()
+        await client.start(os.getenv('BOT_TOKEN'))
+
+asyncio.run(main())
+

@@ -1,8 +1,10 @@
+from util.Connection import Connection
 import os
 import urllib
 import requests
 from urllib import parse
-from util.Connection import Connection
+
+
 
 
 class GiphyConnection(Connection):

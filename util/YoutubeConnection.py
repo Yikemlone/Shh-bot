@@ -1,10 +1,10 @@
-import os
 from util.Connection import Connection
+import os 
+import Connection
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 
 load_dotenv(".env")
-
 
 class YouTubeConnection(Connection):
 

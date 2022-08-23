@@ -5,8 +5,8 @@ import discord
 from discord import ClientException
 from discord.ext import commands
 from dotenv import load_dotenv
-from util.YoutubeConnection import YouTubeConnection
-from util.SpotifyConnection import SpotifyConnection
+from util.YouTubeConnection import YouTubeConnection
+from util.SpotifyConnection import SpotifyConnection 
 
 
 class Music(commands.Cog):
@@ -173,5 +173,5 @@ class Music(commands.Cog):
         self.radio_songs.append(SpotifyConnection.get_data(song))
 
 
-def setup(client):
-    client.add_cog(Music(client))
+async def setup(client):
+    await client.add_cog(Music(client))

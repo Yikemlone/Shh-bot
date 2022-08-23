@@ -38,5 +38,5 @@ class GifSpam(commands.Cog):
         await ctx.send(random.choice(gif_data)["url"])
 
 
-def setup(client):
-    client.add_cog(GifSpam(client))
+async def setup(client):
+    await client.add_cog(GifSpam(client))

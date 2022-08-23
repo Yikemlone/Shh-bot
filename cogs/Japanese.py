@@ -29,5 +29,5 @@ class Japanese(commands.Cog):
         await ctx.send(await getJapaneseWordTranslation(ctx, message))
 
 
-def setup(client):
-    client.add_cog(Japanese(client))
+async def setup(client):
+    await client.add_cog(Japanese(client))

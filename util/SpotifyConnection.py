@@ -1,9 +1,9 @@
+from util.Connection import Connection
 import os
 import urllib
 import dotenv
 import requests
 from urllib import parse
-from util.Connection import Connection
 
 
 class SpotifyConnection(Connection):
