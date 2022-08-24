@@ -45,12 +45,12 @@ class Music(commands.Cog):
         vc_name = ctx.author.voice.channel.name
 
         try:
-            if self.channel is None:
-                self.channel = discord.utils.get(ctx.guild.voice_channels, name=vc_name)
-                self.voice_client = await self.channel.connect()
+            # if self.channel is not None:
+            self.channel = discord.utils.get(ctx.guild.voice_channels, name=vc_name)
+            self.voice_client = await self.channel.connect()
 
-            elif vc_name != str(self.channel):
-                await self.move_vc(ctx, vc_name)
+            # elif vc_name != str(self.channel):
+            #     await self.move_vc(ctx, vc_name)
 
         except ClientException:
             await ctx.send(f"{ctx.author.mention} the bot is already the current VC.")
@@ -58,6 +58,8 @@ class Music(commands.Cog):
             await ctx.send(f"{ctx.author.mention} the bot took too long to join the VC.")
         except AttributeError:
             await ctx.send(f"{ctx.author.mention} you must be in a VC to play music.")
+        except Exception as ex:
+            print(ex)
 
     @commands.command(aliases=["l"])
     async def leave(self, ctx):

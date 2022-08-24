@@ -1,29 +1,30 @@
-from util.Connection import Connection
+# from util import APIConnection
 import os
 import urllib
 import requests
 from urllib import parse
 
 
-
-
-class GiphyConnection(Connection):
+class GiphyConnection():
 
     @staticmethod
     def get_data(data):
-        word = data.content
+        try:
+            url = "http://api.giphy.com/v1/gifs/search?"
 
-        url = "http://api.giphy.com/v1/gifs/search?"
+            params = urllib.parse.urlencode({
+                "q": f"{data}",
+                "api_key": os.getenv("GIF_API_KEY"),
+                "limit": "20",
+                "rating": "pg"
+            })
 
-        params = urllib.parse.urlencode({
-            "q": f"{word}",
-            "api_key": os.getenv("GIF_API_KEY"),
-            "limit": "20",
-            "rating": "pg"
-        })
+            response = (requests.get(url + params))
+            gif = response.json()
+            gif_data = gif["data"]
+        except Exception as ex:
+            print(ex)
 
-        response = (requests.get(url + params))
-        gif = response.json()
-        gif_data = gif["data"]
 
         return gif_data
+ 

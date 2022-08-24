@@ -15,7 +15,7 @@ client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status
 
 async def load_extensions():
     for filename in os.listdir("cogs"):
-        if filename.endswith(".py") and filename != "Nsfw.py":
+        if filename.endswith(".py"):
            await client.load_extension(f"cogs.{filename[:-3]}")
 
 
