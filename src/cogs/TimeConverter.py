@@ -22,6 +22,7 @@ class TimeConverter(commands.Cog):
     def has_time(message):
         """Will return true if the message has a valid time."""
         print(message)
+        return True
 
     async def validate_time(self, message):
         """Will check the if the time in the message is valid."""
@@ -35,5 +36,5 @@ class TimeConverter(commands.Cog):
         """Returns the time passed in converted to user local time."""
 
 
-def setup(client):
-    client.add_cog(TimeConverter(client))
+async def setup(client):
+    await client.add_cog(TimeConverter(client))

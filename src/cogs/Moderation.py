@@ -43,5 +43,5 @@ class Moderation(commands.Cog):
                 return
 
 
-def setup(client):
-    client.add_cog(Moderation(client))
+async def setup(client):
+    await client.add_cog(Moderation(client))

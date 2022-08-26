@@ -1,26 +1,26 @@
+# from util import APIConnection
 import os
 import urllib
 import dotenv
 import requests
 from urllib import parse
-from util.Connection import Connection
 
 
-class SpotifyConnection(Connection):
+class SpotifyConnection():
 
     @staticmethod
     def get_data(data):
-        """Returns a tuple with song name and artist."""
-        URL = "https://api.spotify.com/v1/search?"
+        try:
+            """Returns a tuple with song name and artist."""
+            URL = "https://api.spotify.com/v1/search?"
 
-        request = urllib.parse.urlencode({
-            "q": f"{data}",
-            "type": "track,artist",
-            "limit": "1"
-        })
+            request = urllib.parse.urlencode({
+                "q": f"{data}",
+                "type": "track,artist",
+                "limit": "1"
+            })
 
-        while True:
-            try:
+            while True:
                 header = {"Authorization": f"Bearer {os.getenv('SPOTIFY_TOKEN')}"}
                 response = requests.get(URL + request, headers=header).json()
                 artist_name = response["tracks"]["items"][0]["album"]["artists"][0]["name"]
@@ -33,8 +33,10 @@ class SpotifyConnection(Connection):
 
                 return song_details
 
-            except KeyError:
-                SpotifyConnection.set_spotify_auth()
+        except KeyError:
+            SpotifyConnection.set_spotify_auth()
+        except Exception as ex:
+            print(ex)
 
     @staticmethod
     def set_spotify_auth():

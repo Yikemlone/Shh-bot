@@ -1,19 +1,17 @@
-import os
-from util.Connection import Connection
+# from util import APIConnection
+import os 
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 
 load_dotenv(".env")
 
-
-class YouTubeConnection(Connection):
+class YouTubeConnection():
 
     @staticmethod
     def get_data(data):
-
-        YOUTUBE = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
-
         try:
+            YOUTUBE = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
+
             request = YOUTUBE.search().list(
                 part="snippet",
                 maxResults=1,
@@ -27,3 +25,5 @@ class YouTubeConnection(Connection):
 
         except IndexError:
             return None
+        except Exception as ex:
+            print(ex)

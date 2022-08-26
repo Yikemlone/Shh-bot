@@ -1,12 +1,10 @@
 import random
 from discord.ext import commands
-from dotenv import load_dotenv
 from util.GiphyConnection import GiphyConnection
 
 
 class GifSpam(commands.Cog):
 
-    load_dotenv(".env")
 
     def __init__(self, client):
         self.client = client
@@ -38,5 +36,5 @@ class GifSpam(commands.Cog):
         await ctx.send(random.choice(gif_data)["url"])
 
 
-def setup(client):
-    client.add_cog(GifSpam(client))
+async def setup(client):
+    await client.add_cog(GifSpam(client))
