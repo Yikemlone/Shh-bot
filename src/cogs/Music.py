@@ -90,7 +90,7 @@ class Music(commands.Cog):
     async def skip(self, ctx):
         """Updates the queue and plays the next song."""
         if len(self.queue) < 2:
-            await ctx.send(f"{ctx.author.mention} no more songs in queue. Add with \"!play\".")
+            await ctx.send(f"{ctx.author.mention} no more songs in queue. Queue some with \"!play\" *song name*.")
             return
 
         self.voice_client.stop()
@@ -98,7 +98,7 @@ class Music(commands.Cog):
         await self.play_song(ctx, self.queue[0])
 
 
-    @commands.command()
+    @commands.command(aliases=["pa"])
     async def pause(self, ctx):
         """Pauses the song that is currently playing."""
         self.voice_client.pause()

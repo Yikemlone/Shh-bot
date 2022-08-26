@@ -1,4 +1,4 @@
-# **Shh Bot**
+# **Shh! Bot**
 
 ## **Summary**
 
