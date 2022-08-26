@@ -7,11 +7,13 @@ from discord.ext import commands
 class BasicCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.file = open(os.path.join("text_files", "beemovie.txt"), newline=None)
+        self.file = open(os.path.join("src/text_files", "beemovie.txt"), newline=None)
+
 
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
+
 
     @commands.command(aliases=["8ball"])
     async def _8ball(self, ctx, *, question):
@@ -37,9 +39,11 @@ class BasicCommands(commands.Cog):
 
         await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
+
     @commands.command()
     async def ez(self, ctx):
         await ctx.send("ggez no re, bot :)")
+
 
     @commands.command()
     @commands.has_role("Spammer")
@@ -52,9 +56,11 @@ class BasicCommands(commands.Cog):
             await asyncio.sleep(1)
             await ctx.send(i)
 
+
     @commands.command(aliases=["stopSpam"])
     async def stop_spam(self, ctx):
         self.file.close()
+
 
     @commands.command(aliases=["type"])
     async def _type(self, ctx):

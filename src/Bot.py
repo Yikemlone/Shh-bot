@@ -14,7 +14,7 @@ client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status
                       help_command=CustomHelpCommand(), voice_client=discord.VoiceClient)
 
 async def load_extensions():
-    for filename in os.listdir("cogs"):
+    for filename in os.listdir("src/cogs"):
         if filename.endswith(".py") and filename != "__init__.py":
            await client.load_extension(f"cogs.{filename[:-3]}")
 
