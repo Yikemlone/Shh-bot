@@ -8,14 +8,14 @@ import asyncio
 
 load_dotenv(".env")
 intents = discord.Intents.all()
-# intents.message_content = True
+intents.message_content = True
 
 client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status.do_not_disturb,
                       help_command=CustomHelpCommand(), voice_client=discord.VoiceClient)
 
 async def load_extensions():
     for filename in os.listdir("cogs"):
-        if filename.endswith(".py"):
+        if filename.endswith(".py") and filename != "__init__.py":
            await client.load_extension(f"cogs.{filename[:-3]}")
 
 
@@ -56,5 +56,8 @@ async def main():
         await load_extensions()
         await client.start(os.getenv('BOT_TOKEN'))
 
-asyncio.run(main())
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
 

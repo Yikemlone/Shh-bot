@@ -7,14 +7,14 @@ class Events(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self.currentUser = ""
-        self.timeStartedTyping = None
+
 
     @commands.Cog.listener()
     async def on_ready(self):
         print("Bot is ready")
         await self.client.change_presence(activity=discord.Game("with Vyx's Titties"),
                                           status=discord.Status.do_not_disturb)
+
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -30,28 +30,17 @@ class Events(commands.Cog):
 
         await ctx.send(reply)
 
-    @commands.Cog.listener()
-    async def on_typing(self, channel, user, when):
-        if user.bot:
-            return
-
-        if self.currentUser == "":
-            self.currentUser = user
-            self.timeStartedTyping = when.time()
-            await asyncio.sleep(60)
-
-        # if user is self.currentUser:
-        #     # await channel.send(f"{user.mention} stop typing.")
-        # else:
-        #     self.currentUser = ""
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        """ When a new member joins, posts a message in chat"""
         channel = discord.utils.get(member.guild.text_channels, name="general")
         await channel.send(f"{member.mention} has joined the server.")
 
+
     @commands.Cog.listener()
     async def on_member_remove(self, member):
+        """ When a member leavs, posts a message in chat"""
         channel = discord.utils.get(member.guild.text_channels, name="general")
         await channel.send(f"{member.mention} has left the server.")
 
