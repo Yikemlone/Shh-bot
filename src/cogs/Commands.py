@@ -1,6 +1,7 @@
 import asyncio
 import random
 import os
+from requests import get
 from discord.ext import commands
 
 
@@ -74,6 +75,12 @@ class BasicCommands(commands.Cog):
             await ctx.trigger_typing()
             await asyncio.sleep(1.5)
             await ctx.send(messages[message])
+
+
+    @commands.command(aliases=["IP", "ip"])
+    async def _get_IP(self, ctx):
+        ip = ip = get('https://api.ipify.org').text
+        await ctx.send(f"The server IP is: {ip}")
 
 
 async def setup(client):

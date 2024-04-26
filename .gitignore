@@ -1,6 +1,5 @@
 *.env
 **/__pycache__
-cogs/Nsfw.py
 songs
 discord-bot/
 ffmpeg-2022/

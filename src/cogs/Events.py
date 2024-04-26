@@ -12,7 +12,7 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("Bot is ready")
-        await self.client.change_presence(activity=discord.Game("with Vyx's Titties"),
+        await self.client.change_presence(activity=discord.Game("with Connor's Titties"),
                                           status=discord.Status.do_not_disturb)
 
 

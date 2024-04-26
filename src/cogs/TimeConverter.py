@@ -21,8 +21,8 @@ class TimeConverter(commands.Cog):
     @staticmethod
     def has_time(message):
         """Will return true if the message has a valid time."""
-        print(message)
-        return True
+        # print(message)
+        return False
 
     async def validate_time(self, message):
         """Will check the if the time in the message is valid."""
