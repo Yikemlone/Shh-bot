@@ -5,28 +5,34 @@ from discord.ext import commands
 
 class Moderation(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
-    @commands.command()
+
+    @discord.app_commands.command(name="clear", description="Clears the chat")
+    @discord.app_commands.describe(amount="The amount of messages to clear")
     # @commands.check(isServerOwner)
-    async def clear(self, ctx, amount=6):
-        await ctx.channel.purge(limit=amount)
+    async def clear(self, interaction : discord.Interaction, amount : int = 6): 
+        await interaction.channel.purge(limit=amount)
+
 
     @commands.command()
     # @commands.check(isServerOwner)
     async def clearAll(self, ctx):
         await ctx.channel.purge(limit=1000000)
 
+
     @commands.command()
     # @commands.check(isServerOwner)
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         await member.kick(reason=reason)
 
+
     @commands.command()
     # @commands.check(isServerOwner)
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         await member.ban(reason=reason)
+
 
     @commands.command()
     # @commands.check(isServerOwner)
@@ -43,5 +49,5 @@ class Moderation(commands.Cog):
                 return
 
 
-async def setup(client):
-    await client.add_cog(Moderation(client))
+async def setup(bot):
+    await bot.add_cog(Moderation(bot))

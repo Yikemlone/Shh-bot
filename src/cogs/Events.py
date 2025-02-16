@@ -2,18 +2,18 @@ from discord.ext import commands
 import discord
 import asyncio
 
-
 class Events(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
+
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if before.author.bot:
             return
 
-        ctx = await self.client.get_context(before)
+        ctx = await self.bot.get_context(before)
         message_author = before.author.mention
 
         reply = f'Look who\'s trying to hide something :) ' \
@@ -38,5 +38,5 @@ class Events(commands.Cog):
 
     # TODO: Add events for kick and ban for funny effect maybe
 
-async def setup(client):
-    await client.add_cog(Events(client))
+async def setup(bot):
+    await bot.add_cog(Events(bot))

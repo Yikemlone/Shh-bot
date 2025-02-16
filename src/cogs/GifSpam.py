@@ -1,14 +1,15 @@
 import random
+import discord
 from discord.ext import commands
 from util.GiphyConnection import GiphyConnection
 
 
 class GifSpam(commands.Cog):
 
-
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
         self.gif_on = False
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -19,14 +20,21 @@ class GifSpam(commands.Cog):
         if self.gif_on:
             await self.post_gif(message)
 
-    @commands.command()
-    async def gif(self, ctx):
+
+    @discord.app_commands.command(name="gif", description="This toggles the bot on and off from posting gifs.")
+    async def gif(self, interaction: discord.Interaction):
         """Toggles the bot on and off from posting gifs."""
-        self.gif_on = False if self.gif_on else True
+        
+        if not self.bot.check_user_role(interaction, "Admin"):
+            await interaction.response.send_message("❌ You do not have the Admin role!", ephemeral=True)
+            return
+
+        self.gif_on = not self.gif_on
+        
 
     async def post_gif(self, message):
         """Will post a gif in the server"""
-        ctx = await self.client.get_context(message)
+        ctx = await self.bot.get_context(message)
         word = message.content
         gif_data = GiphyConnection.get_data(word)
 
@@ -36,5 +44,5 @@ class GifSpam(commands.Cog):
         await ctx.send(random.choice(gif_data)["url"])
 
 
-async def setup(client):
-    await client.add_cog(GifSpam(client))
+async def setup(bot):
+    await bot.add_cog(GifSpam(bot))

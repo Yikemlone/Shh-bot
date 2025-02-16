@@ -6,15 +6,15 @@ from discord.ext import commands
 
 class TimeConverter(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
             return
 
-        smush_emoji = discord.utils.get(self.client.emojis, name="smush")
+        smush_emoji = discord.utils.get(self.bot.emojis, name="smush")
 
         if self.has_time(message.content):
             await message.add_reaction(smush_emoji)
@@ -37,5 +37,5 @@ class TimeConverter(commands.Cog):
         """Returns the time passed in converted to user local time."""
 
 
-async def setup(client):
-    await client.add_cog(TimeConverter(client))
+async def setup(bot):
+    await bot.add_cog(TimeConverter(bot))
