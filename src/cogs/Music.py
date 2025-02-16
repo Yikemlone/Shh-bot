@@ -1,6 +1,6 @@
 import asyncio
 import os
-import youtube_dl
+import yt_dlp as youtube_dl	
 import discord
 from discord import ClientException
 from discord.ext import commands
@@ -18,11 +18,17 @@ class Music(commands.Cog):
         self.queue = []
         self.looping = False
         self.radio_songs = []
-        self.YT_DL_OPTIONS = {'format': 'bestaudio/best'}
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
                                'options': '-vn'}
+        
+        self.YT_DL_OPTIONS  = {
+            'format': 'bestaudio[ext=m4a]/bestaudio',  # Prioritize direct audio formats
+            'noplaylist': True,  # Only process a single video
+            'quiet': True,  # Suppress extra output
+        }
+
         self.ytdl = youtube_dl.YoutubeDL(self.YT_DL_OPTIONS)
-        self.FFMPEG_EXE_PATH = "ffmpeg-2022\\bin\\ffmpeg.exe"
+        self.FFMPEG_EXE_PATH = "ffmpeg-2025\\bin\\ffmpeg.exe"
 
     async def move_vc(self, ctx, vc_name): 
         """Will leave current VC, to a new VC."""
@@ -63,8 +69,7 @@ class Music(commands.Cog):
         except Exception as ex:
             print(ex)
 
-
-    @commands.command(aliases=["l"])
+    @discord.ext.commands.Cog.listener()
     async def leave(self, ctx):
         """The bot will leave the VC it is currently in."""
         self.voice_client.stop()
@@ -163,7 +168,7 @@ class Music(commands.Cog):
 
             with youtube_dl.YoutubeDL(self.YT_DL_OPTIONS) as ydl:
                 song_information = ydl.extract_info(song, download=False)
-                song_url = song_information["formats"][0]["url"]
+                song_url = song_information["url"]
                 self.song_source = discord.FFmpegPCMAudio(song_url, **self.FFMPEG_OPTIONS, executable=self.FFMPEG_EXE_PATH) 
                 self.voice_client.play(self.song_source)
                 await asyncio.sleep(song_information["duration"] + 2)
