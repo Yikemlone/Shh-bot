@@ -2,7 +2,7 @@
 
 ## **Summary**
 
-Pyhton version: 3.10.2
+Python version: 3.12.1
 
 This is a bot made for Discord using Discord.py.
 

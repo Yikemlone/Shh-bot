@@ -1,5 +1,5 @@
 *.env
 **/__pycache__
 songs
-discord-bot/
+.venv/
 ffmpeg-2022/
