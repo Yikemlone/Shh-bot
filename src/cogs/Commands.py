@@ -1,6 +1,7 @@
 import asyncio
 import random
 import os
+import discord
 from requests import get
 from discord.ext import commands
 
@@ -49,6 +50,9 @@ class BasicCommands(commands.Cog):
     @commands.command()
     @commands.has_role("Spammer")
     async def spam(self, ctx):
+        # Check the user if they have the role
+       
+        
         for i in self.file:
             if i == "\n":
                 continue
@@ -77,10 +81,14 @@ class BasicCommands(commands.Cog):
             await ctx.send(messages[message])
 
 
-    @commands.command(aliases=["IP", "ip"])
-    async def _get_IP(self, ctx):
-        ip = ip = get('https://api.ipify.org').text
-        await ctx.send(f"The server IP is: {ip}")
+    # @commands.command(aliases=["IP", "ip"])
+    # async def _get_IP(self, ctx):
+    #     ip = get('https://api.ipify.org').text
+    #     await ctx.send(f"The server IP is: {ip}")
+
+    @discord.app_commands.command(name="js", description="Says hello!")
+    async def js(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"Hello, {interaction.user.mention}!")
 
 
 async def setup(client):

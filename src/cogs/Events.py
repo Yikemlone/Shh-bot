@@ -8,14 +8,6 @@ class Events(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print("Bot is ready")
-        await self.client.change_presence(activity=discord.Game("with Connor's Titties"),
-                                          status=discord.Status.do_not_disturb)
-
-
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
         if before.author.bot:
@@ -44,6 +36,7 @@ class Events(commands.Cog):
         channel = discord.utils.get(member.guild.text_channels, name="general")
         await channel.send(f"{member.mention} has left the server.")
 
+    # TODO: Add events for kick and ban for funny effect maybe
 
 async def setup(client):
     await client.add_cog(Events(client))

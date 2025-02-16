@@ -1,5 +1,5 @@
 *.env
-**/__pycache__
-songs
+__pycache__/
+songs/
 .venv/
-ffmpeg-2022/
+ffmpeg-*/
