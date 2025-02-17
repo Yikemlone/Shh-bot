@@ -3,19 +3,15 @@ import discord
 import os
 import asyncio
 
-from discord import app_commands
-from dotenv import load_dotenv
 from discord.ext import commands
-from calendar import c
-from util.CustomHelpCommand import CustomHelpCommand
+from util.customhelpcommand import CustomHelpCommand
+from util.logger import logging
 
-# Load the environment variables
-load_dotenv(".env")
+logger = logging.getLogger("shh-bot")
 
 # Define the intents, this is required for the bot to work
 intents = discord.Intents.all()
 intents.message_content = True
-
 
 # Define the bot
 bot = commands.Bot(command_prefix="!", intents=intents,
@@ -87,28 +83,20 @@ async def reload(interaction : discord.Interaction, extension : str):
 
 @bot.event
 async def on_ready():
-    print("Bot is ready")
+    logger.info(f"Bot is ready. Logged in as {bot.user}")
     await bot.change_presence(activity=discord.Game("with my emotions"), status=discord.Status.do_not_disturb)
 
     try:
         synced = await bot.tree.sync()  # Syncs slash commands globally
-        print(f"Synced {len(synced)} commands.")
+        logger.info(f"Synced {len(synced)} commands.")
 
     except Exception as e:
-        print(f"Error syncing commands: {e}")
-
-
-@bot.tree.command(name="ez", description="This is for a monkey.")
-async def _ez(interaction: discord.Interaction):
-    # TODO: Check if this is Fylik
-    await interaction.response.send_message("ggez no re, bot :)")
-    
+        logger.error(f"Error syncing commands: {e}")
 
 
 async def main():
-    async with bot:
-        await load_extensions()
-        await bot.start(os.getenv('BOT_TOKEN'))
+    await load_extensions()
+    await bot.start(os.getenv('BOT_TOKEN'))
 
 
 if __name__ == "__main__":

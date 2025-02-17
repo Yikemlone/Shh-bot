@@ -1,6 +1,9 @@
 import discord
 import datetime
 from discord.ext import commands
+from util.logger import logging
+
+logger = logging.getLogger("shh-bot")
 
 # TODO: Review for removal 
 
@@ -22,7 +25,7 @@ class TimeConverter(commands.Cog):
     @staticmethod
     def has_time(message):
         """Will return true if the message has a valid time."""
-        # print(message)
+        # logger.info(message)
         return False
 
     async def validate_time(self, message):

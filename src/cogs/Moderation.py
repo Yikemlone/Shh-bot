@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
-# from Bot import isServerOwner
+from util.logger import logging
 
-
+logger = logging.getLogger("shh-bot")
 class Moderation(commands.Cog):
 
     def __init__(self, bot):

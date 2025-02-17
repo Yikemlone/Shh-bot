@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
 import requests
+from util.logger import logging
 
-
+logger = logging.getLogger("shh-bot")
 class Japanese(commands.Cog):
 
     def __init__(self, bot):

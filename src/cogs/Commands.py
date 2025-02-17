@@ -4,7 +4,9 @@ import os
 import discord
 from requests import get
 from discord.ext import commands
+from util.logger import logging
 
+logger = logging.getLogger("shh-bot")
 
 class BasicCommands(commands.Cog):
     def __init__(self, bot):
@@ -43,11 +45,11 @@ class BasicCommands(commands.Cog):
         await interaction.response.send_message(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
 
-    # @discord.app_commands.command(name="ez", description="This is for a monkey.")
-    # async def _ez(self, interaction: discord.Interaction):
-    #     # TODO: Check if this is Fylik
-    #     print(interaction.author)
-    #     await interaction.response.send_message("ggez no re, bot :)")
+    @discord.app_commands.command(name="ez", description="This is for a monkey.")
+    async def _ez(self, interaction: discord.Interaction):
+        # TODO: Check if this is Fylik
+        logger.info(interaction.author)
+        await interaction.response.send_message("ggez no re, bot :)")
 
 
     @discord.app_commands.command(name="spam", description="This will spam the chat with the bee movie script.")

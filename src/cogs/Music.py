@@ -4,8 +4,11 @@ import yt_dlp as youtube_dl
 import discord
 from discord import ClientException
 from discord.ext import commands
-from util.YouTubeConnection import YouTubeConnection
-from util.SpotifyConnection import SpotifyConnection 
+from util.youtubeconnection import YouTubeConnection
+from util.spotifyconnection import SpotifyConnection 
+from util.logger import logging
+
+logger = logging.getLogger("shh-bot")
 
 
 class Music(commands.Cog):
@@ -14,7 +17,7 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel = None
-        self.voice_client = None
+        self.voice_client : discord.VoiceClient = None
         self.song_source = None
         self.queue = []
         self.looping = False
@@ -32,10 +35,10 @@ class Music(commands.Cog):
         self.FFMPEG_EXE_PATH = "ffmpeg-2025\\bin\\ffmpeg.exe"
 
 
-    async def move_vc(self, ctx, vc_name): 
+    async def move_vc(self, interaction: discord.Interaction, vc_name): 
         """Will leave current VC, to a new VC."""
-        await self.leave(ctx)
-        self.channel = discord.utils.get(ctx.guild.voice_channels, name=vc_name)
+        await self.leave(interaction)
+        self.channel = discord.utils.get(interaction.guild.voice_channels, name=vc_name)
         self.voice_client = await self.channel.connect()
 
 
@@ -50,26 +53,26 @@ class Music(commands.Cog):
         self.queue.pop(0)
 
 
-    async def join(self, ctx):
+    async def join(self, interaction : discord.Interaction):
         """The bot will try to connect to the VC the user is in."""
-        vc_name = ctx.author.voice.channel.name
+        vc_name = interaction.user.voice.channel.name
 
         try:
             if self.channel is None:
-                self.channel = ctx.author.voice.channel
+                self.channel = interaction.user.voice.channel
                 self.voice_client = await self.channel.connect()
 
             elif vc_name != str(self.channel):
-                await self.move_vc(ctx, vc_name)
+                await self.move_vc(interaction, vc_name)
 
         except ClientException:
-            await ctx.send(f"{ctx.author.mention} the bot is already the current VC.")
+            await interaction.response.send_message(f"{interaction.user.mention} the bot is already the current VC.")
         except asyncio.TimeoutError:
-            await ctx.send(f"{ctx.author.mention} the bot took too long to join the VC.")
+            await interaction.response.send_message(f"{interaction.user.mention} the bot took too long to join the VC.")
         except AttributeError:
-            await ctx.send(f"{ctx.author.mention} you must be in a VC to play music.")
+            await interaction.response.send_message(f"{interaction.user.mention} you must be in a VC to play music.")
         except Exception as ex:
-            print(ex)
+            logger.info(ex)
 
 
     @discord.app_commands.command(name="leave", description="This will make the bot leave the VC.")
@@ -90,10 +93,12 @@ class Music(commands.Cog):
         if url is not None:
             self.queue.append(url)
 
-        print(self.radio_songs)
-
+        await interaction.response.send_message(f"{interaction.user.mention} playing {self.queue[0]}.")
+        
         await self.join(interaction)
         await self.play_song(interaction, self.queue[0])
+
+        await interaction.response.send_message(f"{interaction.user.mention} playing {self.queue[0]}.")
 
 
     @discord.app_commands.command(name="skip", description="This will skip the current song and play the next song in the queue.")
@@ -101,25 +106,29 @@ class Music(commands.Cog):
         """Updates the queue and plays the next song."""
 
         if len(self.queue) < 2:
-            await interaction.response.send_message(f"{interaction.author.mention} no more songs in queue. Queue some with \"!play\" *song name*.")
+            await interaction.response.send_message(f"{interaction.user.mention} no more songs in queue. Queue some with \"!play\" *song name*.")
             return
 
         self.voice_client.stop()
+        interaction.response.send_message(f"{interaction.user.mention} skipping {self.queue[0]}.")
         self.update_queue()
 
         await self.play_song(interaction, self.queue[0])
 
 
     @discord.app_commands.command(name="pause", description="This will pause the song that is currently playing.")
-    async def pause(self, ctx):
+    async def pause(self, interaction: discord.Interaction):
         """Pauses the song that is currently playing."""
         self.voice_client.pause()
+        await interaction.response.send_message(f"{interaction.user.mention} pausing song.")
 
 
     @discord.app_commands.command(name="resume", description="This will resume a song that was playing.")
-    async def resume(self, ctx):
+    async def resume(self, interaction: discord.Interaction):
         """Resumes a song that was playing."""
         self.voice_client.play(self.song_source)
+        await interaction.response.send_message(f"{interaction.user.mention} resuming song.")
+
 
 
     @discord.app_commands.command(name="loop", description="This will loop the songs in the queue.")    
@@ -129,15 +138,15 @@ class Music(commands.Cog):
         if self.looping:
             self.looping = False
             self.queue = []
-            await interaction.response.send_message(f"{interaction.author.mention} no longer looping songs.")
+            await interaction.response.send_message(f"{interaction.user.mention} no longer looping songs.")
         else:
             self.looping = True
-            await interaction.response.send_message(f"{interaction.author.mention} looping songs.")
+            await interaction.response.send_message(f"{interaction.user.mention} looping songs.")
 
 
-    @discord.app_commands.command(name="queue", description="This will print out the current queue.")
+    @discord.app_commands.command(name="queue", description="This will logger.info out the current queue.")
     async def queue(self, interaction: discord.Interaction):
-        """Will print out the queue as a discord embed."""
+        """Will logger.info out the queue as a discord embed."""
         # image = discord.File(os.path.join("text_files", "Skelly-thumbs-up.gif"), filename="Skelly-thumbs-up.gif")
 
         embed = discord.Embed(
@@ -156,19 +165,19 @@ class Music(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
 
-    async def get_link(self, ctx, name):
+    async def get_link(self, interaction : discord.Interaction , name):
         """Returns a string as a link of the top search video with the name passed in. Else it returns None"""
         name = name.replace(" ", "+")
         self.store_for_radio_mode(name)
         link = YouTubeConnection.get_data(name)
 
         if link is None:
-            ctx.send(f"{ctx.author.mention} there was an error getting that song.")
+            await interaction.response.send_message(f"{interaction.user.mention} there was an error getting that song.")
 
         return link
 
 
-    async def play_song(self, ctx, song):
+    async def play_song(self, interaction : discord.Interaction , song):
         """Will try to play the song that was passed in."""
         try:
             if self.voice_client.is_playing():
@@ -184,14 +193,14 @@ class Music(commands.Cog):
             self.update_queue()
 
             if len(self.queue) > 0:
-                await self.play_song(ctx, self.queue[0])
+                await self.play_song(interaction, self.queue[0])
 
         except ClientException as ex:
-            print(ex)
-            await ctx.send(f"{ctx.author.mention} something went wrong with playing the song you requested.")
+            logger.info(ex)
+            await interaction.response.send_message(f"{interaction.user.mention} something went wrong with playing the song you requested.")
         except Exception as ex:
-            print(ex)
-            await ctx.send(f"{ctx.author.mention} unknown error with playing a song.")
+            logger.info(ex)
+            await interaction.response.send_message(f"{interaction.user.mention} unknown error with playing a song.")
 
 
     def radio_mode(self):

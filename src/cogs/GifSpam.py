@@ -1,8 +1,10 @@
 import random
 import discord
 from discord.ext import commands
-from util.GiphyConnection import GiphyConnection
+from util.giphyconnection import GiphyConnection
+from util.logger import logging
 
+logger = logging.getLogger("shh-bot")
 
 class GifSpam(commands.Cog):
 
@@ -30,7 +32,7 @@ class GifSpam(commands.Cog):
             return
 
         self.gif_on = not self.gif_on
-        
+
 
     async def post_gif(self, message):
         """Will post a gif in the server"""

@@ -4,7 +4,9 @@ import urllib
 import dotenv
 import requests
 from urllib import parse
+from util.logger import logging
 
+logger = logging.getLogger("shh-bot")
 
 class SpotifyConnection():
 
@@ -36,7 +38,7 @@ class SpotifyConnection():
         except KeyError:
             SpotifyConnection.set_spotify_auth()
         except Exception as ex:
-            print(ex)
+            logger.info(ex)
 
     @staticmethod
     def set_spotify_auth():

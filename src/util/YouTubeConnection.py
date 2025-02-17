@@ -1,6 +1,9 @@
 # from util import APIConnection
 import os 
 from googleapiclient.discovery import build
+from util.logger import logging
+
+logger = logging.getLogger("shh-bot")
 
 class YouTubeConnection():
 
@@ -23,4 +26,4 @@ class YouTubeConnection():
         except IndexError:
             return None
         except Exception as ex:
-            print(ex)
+            logger.info(ex)

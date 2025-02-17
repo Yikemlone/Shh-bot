@@ -3,7 +3,9 @@ import os
 import urllib
 import requests
 from urllib import parse
+from util.logger import logging
 
+logger = logging.getLogger("shh-bot")
 
 class GiphyConnection():
 
@@ -23,8 +25,7 @@ class GiphyConnection():
             gif = response.json()
             gif_data = gif["data"]
         except Exception as ex:
-            print(ex)
-
+            logger.info(ex)
 
         return gif_data
  

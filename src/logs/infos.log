@@ -1,0 +1,6 @@
+[32m2025-02-17 19:36:50,909 [INFO] - client logging in using static token[0m
+[32m2025-02-17 19:36:51,933 [INFO] - gateway Shard ID None has connected to Gateway (Session ID: aa7b04d7b6db1755d2cbe4d1806d96a2).[0m
+[32m2025-02-17 19:37:42,867 [INFO] - voice_state Connecting to voice...[0m
+[32m2025-02-17 19:37:42,867 [INFO] - voice_state Starting voice handshake... (connection attempt 1)[0m
+[32m2025-02-17 19:37:43,105 [INFO] - voice_state Voice handshake complete. Endpoint found: rotterdam7386.discord.media[0m
+[32m2025-02-17 19:37:43,395 [INFO] - voice_state Voice connection complete.[0m
