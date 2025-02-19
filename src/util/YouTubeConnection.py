@@ -1,4 +1,3 @@
-# from util import APIConnection
 import os 
 from googleapiclient.discovery import build
 from util.logger import logging
@@ -8,8 +7,9 @@ logger = logging.getLogger("shh-bot")
 class YouTubeConnection():
 
     @staticmethod
-    def get_data(data):
+    async def get_data(data):
         try:
+            data = data.replace(" ", "+")
             YOUTUBE = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
 
             request = YOUTUBE.search().list(

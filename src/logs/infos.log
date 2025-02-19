@@ -1,6 +1,61 @@
-[32m2025-02-17 19:36:50,909 [INFO] - client logging in using static token[0m
-[32m2025-02-17 19:36:51,933 [INFO] - gateway Shard ID None has connected to Gateway (Session ID: aa7b04d7b6db1755d2cbe4d1806d96a2).[0m
-[32m2025-02-17 19:37:42,867 [INFO] - voice_state Connecting to voice...[0m
-[32m2025-02-17 19:37:42,867 [INFO] - voice_state Starting voice handshake... (connection attempt 1)[0m
-[32m2025-02-17 19:37:43,105 [INFO] - voice_state Voice handshake complete. Endpoint found: rotterdam7386.discord.media[0m
-[32m2025-02-17 19:37:43,395 [INFO] - voice_state Voice connection complete.[0m
+[32m2025-02-19 01:02:32,557 [INFO] - client - login - Line 611: logging in using static token[0m
+[32m2025-02-19 01:02:34,290 [INFO] - gateway - received_message - Line 563: Shard ID None has connected to Gateway (Session ID: 7b424a3faeae64c9e0b551174329f2b9).[0m
+[32m2025-02-19 01:02:36,300 [INFO] - Bot - on_ready - Line 86: Bot is ready. Logged in as Shh!#4826[0m
+[32m2025-02-19 01:02:36,844 [INFO] - Bot - on_ready - Line 91: Synced 19 commands.[0m
+[32m2025-02-19 01:02:46,040 [INFO] - music - play - Line 108: Song queue: [{'URL': 'https://www.youtube.com/watch?v=L_jWHffIx5E', 'name': 'Smash Mouth', 'song': 'Astro Lounge'}][0m
+[32m2025-02-19 01:02:46,041 [INFO] - voice_state - _connect - Line 427: Connecting to voice...[0m
+[32m2025-02-19 01:02:46,041 [INFO] - voice_state - _inner_connect - Line 400: Starting voice handshake... (connection attempt 1)[0m
+[32m2025-02-19 01:02:46,294 [INFO] - voice_state - _inner_connect - Line 409: Voice handshake complete. Endpoint found: rotterdam11152.discord.media[0m
+[32m2025-02-19 01:02:46,573 [INFO] - voice_state - _connect - Line 433: Voice connection complete.[0m
+[32m2025-02-19 01:02:53,668 [INFO] - music - skip - Line 123: Song queue len: 1[0m
+[32m2025-02-19 01:03:13,198 [INFO] - music - play - Line 108: Song queue: [{'URL': 'https://www.youtube.com/watch?v=L_jWHffIx5E', 'name': 'Smash Mouth', 'song': 'Astro Lounge'}, {'URL': 'https://www.youtube.com/watch?v=NyzJQsT9Lo4', 'name': 'Lil Peep', 'song': "Come Over When You're Sober, Pt. 2"}][0m
+[32m2025-02-19 01:03:35,230 [INFO] - music - skip - Line 123: Song queue len: 2[0m
+[32m2025-02-19 01:03:38,619 [INFO] - player - _kill_process - Line 228: ffmpeg process 12168 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:03:38,624 [INFO] - player - _kill_process - Line 230: ffmpeg process 12168 should have terminated with a return code of 1.[0m
+[31m2025-02-19 01:03:40,250 [ERROR] - music - play_current_song - Line 234: Error in play_current_song: Already playing audio.[0m
+[32m2025-02-19 01:05:46,241 [INFO] - music - skip - Line 123: Song queue len: 1[0m
+[32m2025-02-19 01:06:00,083 [INFO] - music - play - Line 108: Song queue: [{'URL': 'https://www.youtube.com/watch?v=NyzJQsT9Lo4', 'name': 'Lil Peep', 'song': "Come Over When You're Sober, Pt. 2"}, {'URL': 'https://www.youtube.com/watch?v=9EcjWd-O4jI', 'name': 'Technotronic', 'song': 'Best Of'}][0m
+[32m2025-02-19 01:06:21,687 [INFO] - music - play - Line 108: Song queue: [{'URL': 'https://www.youtube.com/watch?v=NyzJQsT9Lo4', 'name': 'Lil Peep', 'song': "Come Over When You're Sober, Pt. 2"}, {'URL': 'https://www.youtube.com/watch?v=9EcjWd-O4jI', 'name': 'Technotronic', 'song': 'Best Of'}, {'URL': 'https://www.youtube.com/watch?v=2aJVGHzJuPo', 'name': 'Reneé Rapp', 'song': 'Snow Angel'}][0m
+[32m2025-02-19 01:06:27,723 [INFO] - music - skip - Line 123: Song queue len: 3[0m
+[32m2025-02-19 01:06:31,666 [INFO] - player - _kill_process - Line 228: ffmpeg process 26472 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:06:31,712 [INFO] - player - _kill_process - Line 230: ffmpeg process 26472 should have terminated with a return code of 1.[0m
+[32m2025-02-19 01:06:31,802 [INFO] - player - _kill_process - Line 228: ffmpeg process 26896 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:06:31,864 [INFO] - player - _kill_process - Line 230: ffmpeg process 26896 should have terminated with a return code of 1.[0m
+[31m2025-02-19 01:06:32,446 [ERROR] - music - play_current_song - Line 234: Error in play_current_song: Already playing audio.[0m
+[32m2025-02-19 01:07:54,394 [INFO] - voice_state - _voice_disconnect - Line 566: The voice handshake is being terminated for Channel ID 948309515663724594 (Guild ID 669500638513856522)[0m
+[32m2025-02-19 01:07:57,617 [INFO] - player - _kill_process - Line 228: ffmpeg process 19768 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:07:57,622 [INFO] - player - _kill_process - Line 230: ffmpeg process 19768 should have terminated with a return code of 1.[0m
+[31m2025-02-19 01:07:57,622 [ERROR] - music - play_current_song - Line 234: Error in play_current_song: Not connected to voice.[0m
+[32m2025-02-19 01:07:57,623 [INFO] - player - _kill_process - Line 228: ffmpeg process 21692 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:07:57,628 [INFO] - player - _kill_process - Line 230: ffmpeg process 21692 should have terminated with a return code of 1.[0m
+[32m2025-02-19 01:08:26,907 [INFO] - music - play - Line 108: Song queue: [{'URL': 'https://www.youtube.com/watch?v=2aJVGHzJuPo', 'name': 'Reneé Rapp', 'song': 'Snow Angel'}, {'URL': 'https://www.youtube.com/watch?v=NyzJQsT9Lo4', 'name': 'Lil Peep', 'song': "Come Over When You're Sober, Pt. 2"}][0m
+[32m2025-02-19 01:08:29,957 [INFO] - player - _kill_process - Line 228: ffmpeg process 8384 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:08:29,961 [INFO] - player - _kill_process - Line 230: ffmpeg process 8384 should have terminated with a return code of 1.[0m
+[31m2025-02-19 01:08:29,961 [ERROR] - music - play_current_song - Line 234: Error in play_current_song: Not connected to voice.[0m
+[32m2025-02-19 01:08:38,765 [INFO] - music - skip - Line 123: Song queue len: 2[0m
+[32m2025-02-19 01:08:42,132 [INFO] - player - _kill_process - Line 228: ffmpeg process 21808 has not terminated. Waiting to terminate...[0m
+[32m2025-02-19 01:08:42,137 [INFO] - player - _kill_process - Line 230: ffmpeg process 21808 should have terminated with a return code of 1.[0m
+[31m2025-02-19 01:08:42,137 [ERROR] - music - play_current_song - Line 234: Error in play_current_song: Not connected to voice.[0m
+[31m2025-02-19 01:08:48,173 [ERROR] - tree - on_error - Line 832: Ignoring exception in command 'resume'[0m
+Traceback (most recent call last):
+  File "F:\Programming\Python\shh-bot\.venv\Lib\site-packages\discord\app_commands\commands.py", line 857, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\Programming\Python\shh-bot\src\cogs\music.py", line 144, in resume
+    @discord.app_commands.command(name="loop", description="This will loop the current songs in the queue.")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\Programming\Python\shh-bot\.venv\Lib\site-packages\discord\voice_client.py", line 478, in play
+    raise ClientException('Not connected to voice.')
+discord.errors.ClientException: Not connected to voice.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "F:\Programming\Python\shh-bot\.venv\Lib\site-packages\discord\app_commands\tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "F:\Programming\Python\shh-bot\.venv\Lib\site-packages\discord\app_commands\commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "F:\Programming\Python\shh-bot\.venv\Lib\site-packages\discord\app_commands\commands.py", line 876, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'resume' raised an exception: ClientException: Not connected to voice.

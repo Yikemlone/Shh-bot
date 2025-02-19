@@ -26,19 +26,20 @@ class GifSpam(commands.Cog):
     @discord.app_commands.command(name="gif", description="This toggles the bot on and off from posting gifs.")
     async def gif(self, interaction: discord.Interaction):
         """Toggles the bot on and off from posting gifs."""
-        
-        if not self.bot.check_user_role(interaction, "Admin"):
-            await interaction.response.send_message("❌ You do not have the Admin role!", ephemeral=True)
-            return
+        # TODO: Add a list of roles that can use this command
+        # if not self.bot.check_user_role(interaction, "Admin"):
+        #     await interaction.response.send_message("❌ You do not have the Admin role!", ephemeral=True)
+        #     return
 
         self.gif_on = not self.gif_on
+        await interaction.response.send_message(f"{'✅' if self.gif_on else '❌'} Gif spam is now {'on' if self.gif_on else 'off'}.")
 
 
     async def post_gif(self, message):
         """Will post a gif in the server"""
         ctx = await self.bot.get_context(message)
         word = message.content
-        gif_data = GiphyConnection.get_data(word)
+        gif_data = await GiphyConnection.get_data(word)
 
         if len(gif_data) == 0:
             return

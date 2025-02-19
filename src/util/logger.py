@@ -4,15 +4,11 @@ from logging.config import dictConfig
 
 LOGGING_CONFIG = {
     "version": 1,
-    "disabled_existing_loggers": False,
+    "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {
-            "format": "%(levelname)-10s - %(asctime)s - %(module)-15s : %(message)s"
-        },
-        "standard": {"format": "%(levelname)-10s - %(name)-15s : %(message)s"},
         "colored": { 
             "()": "colorlog.ColoredFormatter",
-            "format": "%(log_color)s%(asctime)s [%(levelname)s] - %(module)-5s %(message)s%(reset)s",
+            "format": "%(log_color)s%(asctime)s [%(levelname)s] - %(module)s - %(funcName)s - Line %(lineno)d: %(message)s%(reset)s",
             "log_colors": {
                 "DEBUG": "cyan",
                 "INFO": "green",
@@ -29,12 +25,12 @@ LOGGING_CONFIG = {
             "formatter": "colored",
         },
         "console2": {
-            "level": "WARNING",
+            "level": "WARN", 
             "class": "logging.StreamHandler",
             "formatter": "colored",
         },
         "file": {
-            "level": "INFO",
+            "level": "DEBUG",  
             "class": "logging.FileHandler",
             "filename": "src/logs/infos.log",
             "mode": "w",
@@ -42,12 +38,13 @@ LOGGING_CONFIG = {
         },
     },
     "loggers": {
-        "shh-bot": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "shh-bot": {"handlers": ["console", "file"], "level": "DEBUG", "propagate": False}, 
         "discord": {
             "handlers": ["console2", "file"],
-            "level": "INFO",
+            "level": "INFO", 
             "propagate": False,
         },
+        "discord.http": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }
 

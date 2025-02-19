@@ -10,8 +10,9 @@ logger = logging.getLogger("shh-bot")
 class GiphyConnection():
 
     @staticmethod
-    def get_data(data):
+    async def get_data(data):
         try:
+            data = data.replace(" ", "+")
             url = "http://api.giphy.com/v1/gifs/search?"
 
             params = urllib.parse.urlencode({
