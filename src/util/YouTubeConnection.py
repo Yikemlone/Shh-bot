@@ -24,6 +24,7 @@ class YouTubeConnection():
             return f"https://www.youtube.com/watch?v={video_id}"
 
         except IndexError:
-            return None
+            logger.warning("No video found.")
+            return "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
         except Exception as ex:
-            logger.info(ex)
+            logger.error(ex)

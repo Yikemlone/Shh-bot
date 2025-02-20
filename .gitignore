@@ -4,3 +4,4 @@ songs/
 .venv/
 ffmpeg-*/
 .vscode/
+logs/

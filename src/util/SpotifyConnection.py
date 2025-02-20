@@ -43,7 +43,7 @@ class SpotifyConnection():
         except KeyError:
             # This will nearly always be a KeyError, need to figure out why it's happening
             SpotifyConnection.set_spotify_auth()
-            logger.info("Token expired, setting new token.")
+            logger.warning("Token expired, setting new token.")
             return await SpotifyConnection.get_data(data)
         except Exception as ex:
             logger.error(ex)

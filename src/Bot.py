@@ -84,7 +84,7 @@ async def reload(interaction : discord.Interaction, extension : str):
 @bot.event
 async def on_ready():
     logger.info(f"Bot is ready. Logged in as {bot.user}")
-    await bot.change_presence(activity=discord.Game("I love you Aliah :3"), status=discord.Status.do_not_disturb)
+    await bot.change_presence(activity=discord.Game("fiddles"), status=discord.Status.do_not_disturb)
 
     try:
         synced = await bot.tree.sync()  # Syncs slash commands globally
