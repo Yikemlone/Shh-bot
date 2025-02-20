@@ -2,10 +2,9 @@
 import discord
 import os
 import asyncio
-
 from discord.ext import commands
-from util.customhelpcommand import CustomHelpCommand
 from util.logger import logging
+from util.util import is_guild_owner
 
 logger = logging.getLogger("shh-bot")
 
@@ -14,9 +13,7 @@ intents = discord.Intents.all()
 intents.message_content = True
 
 # Define the bot
-bot = commands.Bot(command_prefix="!", intents=intents,
-                      help_command=CustomHelpCommand(), 
-                      voice_client=discord.VoiceClient)
+bot = commands.Bot(command_prefix="!", intents=intents, voice_client=discord.VoiceClient)
 
 
 async def load_extensions():
@@ -26,18 +23,16 @@ async def load_extensions():
            await bot.load_extension(f"cogs.{filename[:-3]}")
 
 
-def is_guild_owner(interaction : discord.Interaction):
-    """Decorator to check if the command user is the server owner."""
-    if interaction.user.id != interaction.guild.owner_id: return 
-    return True
+@bot.tree.command(name="list_extentions", description="Display a list of the COGS the bot has.") 
+async def list_extensions(interaction : discord.Interaction):
+    """Lists all the cogs in the cogs folder."""
+    if not is_guild_owner(interaction):
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
+        return
 
-
-def check_user_role(interaction : discord.Interaction, role_name: str):
-    """Checks if the user has the role."""
-    for role in interaction.user.roles:
-        if role.name == role_name:
-            return True
-    return False
+    for filename in os.listdir("src/cogs"):
+        if filename.endswith(".py") and filename != "__init__.py":
+            print(filename)
 
 
 @bot.event
@@ -51,7 +46,7 @@ async def on_message(message):
 async def load(interaction : discord.Interaction, extension : str):
 
     if not is_guild_owner(interaction):
-        await interaction.response.send_message("You are not the server owner.")
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
         return
     
     await bot.load_extension(f"cogs.{extension}")
@@ -62,7 +57,7 @@ async def load(interaction : discord.Interaction, extension : str):
 async def unload(interaction : discord.Interaction, extension : str):
 
     if not is_guild_owner(interaction):
-        await interaction.response.send_message("You are not the server owner.")
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
         return
 
     await bot.unload_extension(f"cogs.{extension}")
@@ -73,7 +68,7 @@ async def unload(interaction : discord.Interaction, extension : str):
 async def reload(interaction : discord.Interaction, extension : str):
    
     if not is_guild_owner(interaction):
-        await interaction.response.send_message("You are not the server owner.")
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
         return
 
     await bot.unload_extension(f"cogs.{extension}")

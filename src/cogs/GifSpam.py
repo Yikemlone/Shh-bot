@@ -2,15 +2,18 @@ import random
 import discord
 from discord.ext import commands
 from util.giphyconnection import GiphyConnection
-from util.logger import logging
+from util.util import user_has_role, is_moderator
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
+
 
 class GifSpam(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         self.gif_on = False
+        self.gif_role = "GIFFER"
 
 
     @commands.Cog.listener()
@@ -23,14 +26,14 @@ class GifSpam(commands.Cog):
             await self.post_gif(message)
 
 
-    @discord.app_commands.command(name="gif", description="This toggles the bot on and off from posting gifs.")
+    @discord.app_commands.command(name="gif_time", description="This toggles the bot on and off from posting gifs.")
     async def gif(self, interaction: discord.Interaction):
         """Toggles the bot on and off from posting gifs."""
-        # TODO: Add a list of roles that can use this command
-        # if not self.bot.check_user_role(interaction, "Admin"):
-        #     await interaction.response.send_message("❌ You do not have the Admin role!", ephemeral=True)
-        #     return
 
+        if not user_has_role(interaction, self.gif_role) and not is_moderator(interaction.user):
+            await interaction.response.send_message(f"{interaction.user.mention} you don't have the permissions for this.", ephemeral=True)
+            return
+            
         self.gif_on = not self.gif_on
         await interaction.response.send_message(f"{'✅' if self.gif_on else '❌'} Gif spam is now {'on' if self.gif_on else 'off'}.")
 

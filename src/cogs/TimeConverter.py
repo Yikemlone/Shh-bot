@@ -1,9 +1,9 @@
 import discord
 import datetime
 from discord.ext import commands
-from util.logger import logging
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
 # TODO: Review for removal 
 

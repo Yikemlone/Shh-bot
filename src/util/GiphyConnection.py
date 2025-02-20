@@ -1,32 +1,34 @@
-# from util import APIConnection
 import os
-import urllib
-import requests
+import aiohttp
+import urllib.parse
+from util.apiconnection import APIConnection
 from urllib import parse
-from util.logger import logging
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
-class GiphyConnection():
+
+class GiphyConnection(APIConnection):
 
     @staticmethod
     async def get_data(data):
         try:
-            data = data.replace(" ", "+")
-            url = "http://api.giphy.com/v1/gifs/search?"
+            data = parse.quote(data)
+            URL = "http://api.giphy.com/v1/gifs/search?"
 
             params = urllib.parse.urlencode({
-                "q": f"{data}",
+                "q": data,
                 "api_key": os.getenv("GIF_API_KEY"),
                 "limit": "20",
                 "rating": "pg"
             })
 
-            response = (requests.get(url + params))
-            gif = response.json()
-            gif_data = gif["data"]
-        except Exception as ex:
-            logger.info(ex)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(URL + params) as response:
+                    gif = await response.json()
 
-        return gif_data
- 
+            return gif.get("data", [])  # Return an empty list if no data is found
+
+        except Exception as ex:
+            logger.error(f"Error fetching Giphy data: {ex}")
+            return []

@@ -2,6 +2,7 @@ import logging
 import colorlog
 from logging.config import dictConfig
 
+
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -47,5 +48,7 @@ LOGGING_CONFIG = {
         "discord.http": {"handlers": ["console"], "level": "INFO", "propagate": False},
     },
 }
+
+SHH_BOT = "shh-bot"
 
 dictConfig(LOGGING_CONFIG)

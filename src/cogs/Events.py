@@ -1,9 +1,8 @@
 from discord.ext import commands
 import discord
-import asyncio
-from util.logger import logging
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
 class Events(commands.Cog):
 
@@ -14,6 +13,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before : discord.Message, after : discord.Message):
+        """This will send a message of the contents of the before and after of a message edit"""
         if before.author.bot or after.author.bot:
             return
 
@@ -34,7 +34,7 @@ class Events(commands.Cog):
         try:
             logger.info(f"{member} has joined the server.")
             channel = discord.utils.get(member.guild.text_channels, name=self.join_channel)
-            await channel.send(f"{member.mention} has joined the server.")
+            await channel.send(f"{member.mention} has joined the server :).")
         except Exception as e:
             logger.error(e)
 
@@ -45,7 +45,7 @@ class Events(commands.Cog):
         try:
             logger.info(f"{member} has left the server.")
             channel = discord.utils.get(member.guild.text_channels, name=self.join_channel)
-            await channel.send(f"{member.mention} has left the server.")
+            await channel.send(f"{member.mention} has left the server :(.")
         except Exception as e:
             logger.error(e)
 

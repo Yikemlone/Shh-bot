@@ -1,15 +1,16 @@
 import os 
 from googleapiclient.discovery import build
-from util.logger import logging
+from urllib import parse
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
 class YouTubeConnection():
 
     @staticmethod
     async def get_data(data):
         try:
-            data = data.replace(" ", "+")
+            data = parse.quote(data)
             YOUTUBE = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
 
             request = YOUTUBE.search().list(

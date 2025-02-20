@@ -1,3 +1,4 @@
+import os
 import asyncio
 import yt_dlp as youtube_dl	
 import discord
@@ -5,9 +6,9 @@ from discord import ClientException
 from discord.ext import commands
 from util.youtubeconnection import YouTubeConnection
 from util.spotifyconnection import SpotifyConnection 
-from util.logger import logging
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
 
 class Music(commands.Cog):
@@ -24,39 +25,37 @@ class Music(commands.Cog):
         self.radio_songs = [] # This was intened to be used for radio mode.
         self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
                                'options': '-vn'}
-        
         self.YT_DL_OPTIONS  = {
             'format': 'bestaudio[ext=m4a]/bestaudio',  # Prioritize direct audio formats
             'noplaylist': True,  # Only process a single video
             'quiet': True,  # Suppress extra output
         }
-
-        self.ytdl = youtube_dl.YoutubeDL(self.YT_DL_OPTIONS)
         self.FFMPEG_EXE_PATH = "ffmpeg-2025\\bin\\ffmpeg.exe"
 
 
-    async def move_vc(self, interaction: discord.Interaction, vc_name): 
+    async def move_vc(self, interaction: discord.Interaction): 
         """Will leave current VC, to a new VC."""
-        await self.leave(interaction)
-        self.channel = discord.utils.get(interaction.guild.voice_channels, name=vc_name)
+        self.voice_client.stop()
+        self.voice_client = await self.voice_client.disconnect() 
+        self.channel = interaction.user.voice.channel
         self.voice_client = await self.channel.connect()
 
 
     def update_queue(self):
-        """Will pop the first song out of the queue and update current_song."""
+        """Will update the current song and the queue list."""
+        if self.looping:
+            self.song_queue.append(self.current_song) 
+        
         if len(self.song_queue) == 0:
             logger.info(f"No more songs in queue.")
             self.current_song = {}
             return
 
-        if self.looping:
-            self.song_queue.append(self.song_queue[0]) 
-
         self.current_song = self.song_queue[0]
         self.song_queue.pop(0)
         logger.info(f"Current song queue: {self.song_queue}")
 
-
+    
     async def join_voice_channel(self, interaction : discord.Interaction):
         """The bot will try to connect to the VC the user is in."""
         if interaction.user.voice is None:
@@ -65,30 +64,28 @@ class Music(commands.Cog):
         vc_name = interaction.user.voice.channel.name
 
         try:
-            logger.info(f"Trying to join VC {vc_name}")
-
             if self.channel is None:
+                logger.info(f"Joining VC: {vc_name}")
                 self.channel = interaction.user.voice.channel
                 self.voice_client = await self.channel.connect()
             elif vc_name != str(self.channel):
-                await self.move_vc(interaction, vc_name)
+                logger.info(f"Moving to join VC: {vc_name}")
+                await self.move_vc(interaction)
 
             return True
         
         except ClientException:
             logger.warning("ClientException: User is not in a VC.")
-            # await interaction.response.send_message(f"{interaction.user.mention} the bot is already the current VC.")
         except asyncio.TimeoutError:
             logger.warning("TimeoutError: Bot took too long to join VC.")
-            # await interaction.response.send_message(f"{interaction.user.mention} the bot took too long to join the VC.")
         except AttributeError:
             logger.warning("AttributeError: User is not in a VC.")
-            # await interaction.response.send_message(f"{interaction.user.mention} you must be in a VC to play music.")
         except Exception as ex:
-            logger.error(ex)
+            logger.error(f"Error joining the {vc_name} VC: {ex}")
 
 
     @discord.app_commands.command(name="leave", description="This will make the bot leave the VC.")
+    @discord.app_commands.guild_only()
     async def leave(self, interaction : discord.Interaction):
         """The bot will leave the VC it is currently in."""
         self.voice_client.stop()
@@ -101,17 +98,20 @@ class Music(commands.Cog):
 
 
     @discord.app_commands.command(name="play", description="This will play the song that is passed in.")
-    @discord.app_commands.describe(name="The name of the song you want to play. Can be a URL.")
+    @discord.app_commands.describe(song_name="The name of the song you want to play. This can be a URL.")
+    @discord.app_commands.describe(artist="The name of the artist for the song.")
+    @discord.app_commands.guild_only()
     # TODO: Add a artist optional argument.
-    # @discord.app_commands.option(name="artist", type=3, description="The name of the song you want to play. Can be a URL.")
-    async def play(self, interaction : discord.Interaction, name : str):
+    async def play(self, interaction : discord.Interaction, song_name : str, artist : str = None):
         """Adds the song to a queue list, joins the VC the user is in and then it will try to play the songs in the queue."""
+        logger.info(f"The artist name: {artist}")
+
         try:
             await interaction.response.defer()
-            isInChannel = await self.join_voice_channel(interaction)
+            joined_voice_channel = await self.join_voice_channel(interaction)
             
-            if isInChannel:
-                message = await self.try_to_play_song(interaction, name)
+            if joined_voice_channel:
+                message = await self.try_to_play_song(interaction, song_name)
                 await interaction.followup.send(message)
             else:
                 await interaction.followup.send(f"{interaction.user.mention} you must be in a VC to play music.")
@@ -121,9 +121,9 @@ class Music(commands.Cog):
 
 
     @discord.app_commands.command(name="skip", description="This will skip the current song and play the next song in the queue.")
+    @discord.app_commands.guild_only()
     async def skip(self, interaction: discord.Interaction):
-        """Updates the queue and plays the next song."""
-
+        """Updates the queue and plays the next song."""  
         if len(self.song_queue) == 0:
             await interaction.response.send_message(f"{interaction.user.mention} no more songs in queue. Queue some with the /queue command and a *song name*.")
             return
@@ -136,6 +136,7 @@ class Music(commands.Cog):
 
 
     @discord.app_commands.command(name="pause", description="This will pause the song that is currently playing.")
+    @discord.app_commands.guild_only()
     async def pause(self, interaction: discord.Interaction):
         """Pauses the song that is currently playing."""
         self.voice_client.pause()
@@ -143,49 +144,62 @@ class Music(commands.Cog):
 
 
     @discord.app_commands.command(name="resume", description="This will resume a song that was playing.")
+    @discord.app_commands.guild_only()
     async def resume(self, interaction: discord.Interaction):
         """Resumes a song that was playing."""
         self.voice_client.play(self.song_source)
         await interaction.response.send_message(f"{interaction.user.mention} resuming **{self.current_song["song"]}** by **{self.current_song["name"]}**.")
 
 
-    @discord.app_commands.command(name="loop", description="This will loop the current songs in the queue.")    
+    @discord.app_commands.command(name="loop", description="This will loop the current songs in the queue.")
+    @discord.app_commands.guild_only()    
     async def loop(self, interaction: discord.Interaction):
         """Will set the bot to loop the songs in the queue."""
         if self.looping:
             self.looping = False
             self.song_queue = []
-            await interaction.response.send_message(f"{interaction.user.mention} no longer looping songs.")
+            await interaction.response.send_message(f"{interaction.user.mention} no longer looping songs :x:")
         else:
             self.looping = True
-            await interaction.response.send_message(f"{interaction.user.mention} looping songs.")
+            await interaction.response.send_message(f"{interaction.user.mention} now looping songs :repeat:")
 
         logger.info(f"Song queue looping: {self.looping}")
 
 
     @discord.app_commands.command(name="queue", description="Displays a list of current songs in the queue.")
+    @discord.app_commands.guild_only()   
     async def queue(self, interaction: discord.Interaction):
-        """Will send the queue as a discord embed."""
-        # image = discord.File(os.path.join("text_files", "Skelly-thumbs-up.gif"), filename="Skelly-thumbs-up.gif")
-        if len(self.song_queue) == 0 and not self.current_song:
-            await interaction.response.send_message(f"{interaction.user.mention} no songs in queue. Queue some with the /play command and a *song name*.")
-            return
+        """Will send the queue as a discord embed with an image."""
+
+        await interaction.response.defer()
+
+        image_path = os.path.join("src\\resources\\images", "Skelly-thumbs-up.gif")
         
+        if len(self.song_queue) == 0 and not self.current_song:
+            await interaction.followup.send(
+                f"{interaction.user.mention} no songs in queue. Queue some with the /play command and a *song name*."
+            )
+            return
+
         embed = discord.Embed(
             title="Song Queue",
             color=discord.Color.red(),
         )
-        
+
         embed.add_field(name=":musical_note: Now Playing", value=f"**{self.current_song['song']}** by **{self.current_song['name']}**", inline=False)
 
         for index, song in enumerate(self.song_queue):
             if song is not None:
-                artist_name = self.song_queue[index]["name"]
-                song_name = self.song_queue[index]["song"]
+                artist_name = song["name"]
+                song_name = song["song"]
                 embed.add_field(name=f"#{index + 1}", value=f"**{song_name}** by **{artist_name}**", inline=True)
 
-        # await ctx.send(file=image)
-        await interaction.response.send_message(embed=embed)
+        if os.path.exists(image_path): 
+            image_file = discord.File(image_path, filename="Skelly-thumbs-up.gif")
+            embed.set_image(url="attachment://Skelly-thumbs-up.gif")
+            await interaction.followup.send(embed=embed, file=image_file) 
+        else:
+            await interaction.followup.send(embed=embed)  
 
 
     async def get_link(self, name):
@@ -235,6 +249,13 @@ class Music(commands.Cog):
                 
                 self.update_queue()
 
+                if not self.channel:
+                    logger.warning("Tried to play next song when not in VC")
+                    return 
+                
+                if not self.voice_client:
+                    logger.warning("Tried to play music when there was no voice client")
+
                 if self.current_song:
                     logger.info(f"Playing next song in queue: {self.current_song["URL"]}")
                     self.play_current_song(self.current_song["URL"])
@@ -249,6 +270,7 @@ class Music(commands.Cog):
         """This will be be called when the bot goes into radio mode. It will play songs from the same artists or genres
         that were played this session."""
         pass
+
 
     async def get_song_details(self, song_name):
         """This will get the artist and track for the radio mode and store them in a list."""

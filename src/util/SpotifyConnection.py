@@ -1,21 +1,21 @@
-# from util import APIConnection
 import os
 import urllib
 import aiohttp
 import dotenv
 import requests
 from urllib import parse
-from util.logger import logging
+from util.apiconnection import APIConnection
+from util.logger import logging, SHH_BOT
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
-class SpotifyConnection():
+class SpotifyConnection(APIConnection):
 
     @staticmethod
     async def get_data(data):
         try:
-            data = data.replace(" ", "+")
             """Returns a tuple with song name and artist."""
+            data = parse.quote(data)
             URL = "https://api.spotify.com/v1/search?"
 
             request = urllib.parse.urlencode({
@@ -48,6 +48,7 @@ class SpotifyConnection():
         except Exception as ex:
             logger.error(ex)
 
+
     @staticmethod
     def set_spotify_auth():
         """Will set a new token of authorization from spotify."""
@@ -65,6 +66,7 @@ class SpotifyConnection():
             dotenv.set_key(".env", "SPOTIFY_TOKEN", os.environ["SPOTIFY_TOKEN"])
         else:
             return
+
 
     @staticmethod
     def get_random_song(artist):
