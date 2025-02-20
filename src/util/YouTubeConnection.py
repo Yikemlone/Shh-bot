@@ -1,15 +1,16 @@
-# from util import APIConnection
 import os 
-from dotenv import load_dotenv
 from googleapiclient.discovery import build
+from urllib import parse
+from util.logger import logging, SHH_BOT
 
-load_dotenv(".env")
+logger = logging.getLogger(SHH_BOT)
 
 class YouTubeConnection():
 
     @staticmethod
-    def get_data(data):
+    async def get_data(data):
         try:
+            data = parse.quote(data)
             YOUTUBE = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
 
             request = YOUTUBE.search().list(
@@ -24,6 +25,7 @@ class YouTubeConnection():
             return f"https://www.youtube.com/watch?v={video_id}"
 
         except IndexError:
-            return None
+            logger.warning("No video found.")
+            return "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
         except Exception as ex:
-            print(ex)
+            logger.error(ex)

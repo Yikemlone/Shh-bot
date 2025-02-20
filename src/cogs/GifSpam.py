@@ -1,14 +1,20 @@
 import random
+import discord
 from discord.ext import commands
-from util.GiphyConnection import GiphyConnection
+from util.giphyconnection import GiphyConnection
+from util.util import user_has_role, is_moderator
+from util.logger import logging, SHH_BOT
+
+logger = logging.getLogger(SHH_BOT)
 
 
 class GifSpam(commands.Cog):
 
-
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
         self.gif_on = False
+        self.gif_role = "GIFFER"
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -19,16 +25,24 @@ class GifSpam(commands.Cog):
         if self.gif_on:
             await self.post_gif(message)
 
-    @commands.command()
-    async def gif(self, ctx):
+
+    @discord.app_commands.command(name="gif_time", description="This toggles the bot on and off from posting gifs.")
+    async def gif(self, interaction: discord.Interaction):
         """Toggles the bot on and off from posting gifs."""
-        self.gif_on = False if self.gif_on else True
+
+        if not user_has_role(interaction, self.gif_role) and not is_moderator(interaction.user):
+            await interaction.response.send_message(f"{interaction.user.mention} you don't have the permissions for this.", ephemeral=True)
+            return
+            
+        self.gif_on = not self.gif_on
+        await interaction.response.send_message(f"{'✅' if self.gif_on else '❌'} Gif spam is now {'on' if self.gif_on else 'off'}.")
+
 
     async def post_gif(self, message):
         """Will post a gif in the server"""
-        ctx = await self.client.get_context(message)
+        ctx = await self.bot.get_context(message)
         word = message.content
-        gif_data = GiphyConnection.get_data(word)
+        gif_data = await GiphyConnection.get_data(word)
 
         if len(gif_data) == 0:
             return
@@ -36,5 +50,5 @@ class GifSpam(commands.Cog):
         await ctx.send(random.choice(gif_data)["url"])
 
 
-async def setup(client):
-    await client.add_cog(GifSpam(client))
+async def setup(bot):
+    await bot.add_cog(GifSpam(bot))

@@ -1,63 +1,98 @@
 
 import discord
 import os
-from dotenv import load_dotenv
-from discord.ext import commands
-from util.CustomHelpCommand import CustomHelpCommand
 import asyncio
+from discord.ext import commands
+from util.logger import logging
+from util.util import is_guild_owner
 
-load_dotenv(".env")
+logger = logging.getLogger("shh-bot")
+
+# Define the intents, this is required for the bot to work
 intents = discord.Intents.all()
 intents.message_content = True
 
-client = commands.Bot(command_prefix="!", intents=intents, status=discord.Status.do_not_disturb,
-                      help_command=CustomHelpCommand(), voice_client=discord.VoiceClient)
+# Define the bot
+bot = commands.Bot(command_prefix="!", intents=intents, voice_client=discord.VoiceClient)
+
 
 async def load_extensions():
+    """Loads all the cogs in the cogs folder."""
     for filename in os.listdir("src/cogs"):
         if filename.endswith(".py") and filename != "__init__.py":
-           await client.load_extension(f"cogs.{filename[:-3]}")
+           await bot.load_extension(f"cogs.{filename[:-3]}")
 
 
-# def is_server_owner(ctx):
-#     if ctx.message.author.id == 401415617032486922:
-#         return True
-
-
-@client.event
-async def on_message(message):
-    if message.author.bot:
+@bot.tree.command(name="list_extentions", description="Display a list of the COGS the bot has.") 
+async def list_extensions(interaction : discord.Interaction):
+    """Lists all the cogs in the cogs folder."""
+    if not is_guild_owner(interaction):
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
         return
 
-    await client.process_commands(message)
+    for filename in os.listdir("src/cogs"):
+        if filename.endswith(".py") and filename != "__init__.py":
+            print(filename)
 
 
-@client.command()
-# @client.check(is_server_owner)
-async def load(ctx, extension):
-    await client.load_extension(f"cogs.{extension}")
+@bot.event
+async def on_message(message):
+    """ This function will be called whenever a message is sent in the server."""
+    if message.author.bot: return
+    await bot.process_commands(message)
 
 
-@client.command()
-# @client.check(is_server_owner)
-async def unload(ctx, extension):
-   await client.unload_extension(f"cogs.{extension}")
+@bot.tree.command(name="load", description="Loads the COGS into the bot") 
+async def load(interaction : discord.Interaction, extension : str):
+
+    if not is_guild_owner(interaction):
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
+        return
+    
+    await bot.load_extension(f"cogs.{extension}")
+    await interaction.response.send_message("Loaded cog.")
 
 
-@client.command()
-# @client.check(is_server_owner)
-async def reload(ctx, extension):
-   await client.unload_extension(f"cogs.{extension}")
-   await client.load_extension(f"cogs.{extension}")
+@bot.tree.command(name="unload", description="Unloads the COGS from the bot") 
+async def unload(interaction : discord.Interaction, extension : str):
+
+    if not is_guild_owner(interaction):
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
+        return
+
+    await bot.unload_extension(f"cogs.{extension}")
+    await interaction.response.send_message("Unloaded cog.")
+
+
+@bot.tree.command(name="reload", description="Reloads the COGS into the bot") 
+async def reload(interaction : discord.Interaction, extension : str):
+   
+    if not is_guild_owner(interaction):
+        await interaction.response.send_message("You are not the server owner.", ephemeral=True)
+        return
+
+    await bot.unload_extension(f"cogs.{extension}")
+    await bot.load_extension(f"cogs.{extension}")
+    await interaction.response.send_message("Reloaded cog.")
+
+
+@bot.event
+async def on_ready():
+    logger.info(f"Bot is ready. Logged in as {bot.user}")
+    await bot.change_presence(activity=discord.Game("fiddles"), status=discord.Status.do_not_disturb)
+
+    try:
+        synced = await bot.tree.sync()  # Syncs slash commands globally
+        logger.info(f"Synced {len(synced)} commands.")
+
+    except Exception as e:
+        logger.error(f"Error syncing commands: {e}")
 
 
 async def main():
-    async with client:
-        await load_extensions()
-        await client.start(os.getenv('BOT_TOKEN'))
+    await load_extensions()
+    await bot.start(os.getenv('BOT_TOKEN'))
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-

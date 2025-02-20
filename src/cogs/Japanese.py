@@ -1,33 +1,24 @@
+import discord
 from discord.ext import commands
-import requests
+from util.japaneseconnection import JapaneseConnection
+from util.logger import logging, SHH_BOT
 
-
-async def getJapaneseWordTranslation(ctx, word):
-    url = "https://jisho.org/api/v1/search/words?keyword="
-    response = requests.get(url + word)
-
-    content = response.json()
-
-    if content["meta"]["status"] != 200:
-        return "Error: Could not communicate with API"
-
-    print(content["data"][0]["jlpt"])
-
-    output = "Kanji: " + (content["data"][0]["japanese"][0]["word"]) + "\t" \
-             + "Hiragana: " + (content["data"][0]["japanese"][0]["reading"])
-
-    return output
+logger = logging.getLogger(SHH_BOT)
 
 
 class Japanese(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
-
-    @commands.command()
-    async def translate(self, ctx, message):
-        await ctx.send(await getJapaneseWordTranslation(ctx, message))
+    def __init__(self, bot):
+        self.bot = bot
 
 
-async def setup(client):
-    await client.add_cog(Japanese(client))
+    @discord.app_commands.command(name="translate", description="This will translate a word to Japanese.")
+    @discord.app_commands.describe(message="The word you want to translate.")
+    async def translate(self, interaction : discord.Interaction, message : str):
+        logger.info(f"Translaiting: {message}")
+        translation = await JapaneseConnection.get_data(message)
+        await interaction.response.send_message(translation)
+
+
+async def setup(bot):
+    await bot.add_cog(Japanese(bot))

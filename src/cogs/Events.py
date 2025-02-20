@@ -1,49 +1,55 @@
 from discord.ext import commands
 import discord
-import asyncio
+from util.logger import logging, SHH_BOT
 
+logger = logging.getLogger(SHH_BOT)
 
 class Events(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
+        self.join_channel = "gamer"
 
 
     @commands.Cog.listener()
-    async def on_ready(self):
-        print("Bot is ready")
-        await self.client.change_presence(activity=discord.Game("with Vyx's Titties"),
-                                          status=discord.Status.do_not_disturb)
-
-
-    @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
-        if before.author.bot:
+    async def on_message_edit(self, before : discord.Message, after : discord.Message):
+        """This will send a message of the contents of the before and after of a message edit"""
+        if before.author.bot or after.author.bot:
             return
 
-        ctx = await self.client.get_context(before)
+        if before.content == after.content:
+            return
+    
         message_author = before.author.mention
+        reply = (f"Look who's trying to hide something 😏\n\n"
+                f"{message_author}'s message before edit: \"{before.content}\"\n\n"
+                f"{message_author}'s message after edit: \"{after.content}\"")
 
-        reply = f'Look who\'s trying to hide something :) ' \
-                f'\n\n{message_author}\'s message before: "{before.content}"' \
-                f'\n{message_author}\'s message after: "{after.content}"'
-
-        await ctx.send(reply)
+        await after.channel.send(reply)
 
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member : discord.Member):
         """ When a new member joins, posts a message in chat"""
-        channel = discord.utils.get(member.guild.text_channels, name="general")
-        await channel.send(f"{member.mention} has joined the server.")
+        try:
+            logger.info(f"{member} has joined the server.")
+            channel = discord.utils.get(member.guild.text_channels, name=self.join_channel)
+            await channel.send(f"{member.mention} has joined the server :).")
+        except Exception as e:
+            logger.error(e)
 
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member):
+    async def on_member_remove(self, member : discord.Member):
         """ When a member leavs, posts a message in chat"""
-        channel = discord.utils.get(member.guild.text_channels, name="general")
-        await channel.send(f"{member.mention} has left the server.")
+        try:
+            logger.info(f"{member} has left the server.")
+            channel = discord.utils.get(member.guild.text_channels, name=self.join_channel)
+            await channel.send(f"{member.mention} has left the server :(.")
+        except Exception as e:
+            logger.error(e)
 
+    # TODO: Add events for kick and ban for funny effect maybe
 
-async def setup(client):
-    await client.add_cog(Events(client))
+async def setup(bot):
+    await bot.add_cog(Events(bot))
