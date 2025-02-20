@@ -14,21 +14,22 @@ pip install -r requirments.txt
 
 You must also create a .env file and give it the tokens for the bot and APIs.
 
-API list:
+### API list
 
-- Spotify
-- Giphy
-- YouTube
+- [Spotify](https://developer.spotify.com)
+- [Giphy](https://developers.giphy.com)
+- [YouTube](https://developers.google.com/youtube/v3)
+- [Jisho.org](https://jisho.org)
 
 You must also supply your ID and secret for the spotify API to work.
 
 ``` .env
-BOT_TOKEN= YOUR BOT TOKEN HERE
-GIF_API_KEY= GIPHY KEY HERE
-YOUTUBE_API_KEY= YOUTUBE KEY HERE
-SPOTIFY_TOKEN= SPOTIFY TOKEN HERE
-SPOTIFY_ID= SPOTIFY ID HERE 
-SPOTIFY_SECRET= SPOTIFY SECRET
+BOT_TOKEN=YOUR BOT TOKEN HERE
+GIF_API_KEY=GIPHY KEY HERE
+YOUTUBE_API_KEY=YOUTUBE KEY HERE
+SPOTIFY_TOKEN=SPOTIFY TOKEN HERE
+SPOTIFY_ID=SPOTIFY ID HERE 
+SPOTIFY_SECRET=SPOTIFY SECRET
 ```
 
 ## **Music Bot**
@@ -37,7 +38,7 @@ If you want the music bot to work properly you must have [ffmpeg](https://ffmpeg
 
 You can put the bin files inside this project and dirrect the bot to it or you can have it in your system path.
 
-```
+``` python
  self.FFMPEG_EXE_PATH = PATH TO FFMPEG
 ```
 
@@ -45,3 +46,4 @@ You can put the bin files inside this project and dirrect the bot to it or you c
 
 - [Discord.py Docs](https://discordpy.readthedocs.io/en/stable/)
 - [Discord.py GitHub](https://github.com/Rapptz/discord.py)
+- [Discord Developer Portal](https://discord.com/developers/applications)
