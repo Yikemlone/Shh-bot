@@ -1,7 +1,7 @@
 import os
 import aiohttp
 import urllib.parse
-from util.apiconnection import APIConnection
+from util.apiconnection.apiconnection import APIConnection
 from urllib import parse
 from util.logger import logging, SHH_BOT
 

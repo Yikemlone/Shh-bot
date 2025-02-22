@@ -4,8 +4,8 @@ import yt_dlp as youtube_dl
 import discord
 from discord import ClientException
 from discord.ext import commands
-from util.youtubeconnection import YouTubeConnection
-from util.spotifyconnection import SpotifyConnection 
+from util.apiconnection.youtubeconnection import YouTubeConnection
+from util.apiconnection.spotifyconnection import SpotifyConnection 
 from util.logger import logging, SHH_BOT
 
 logger = logging.getLogger(SHH_BOT)

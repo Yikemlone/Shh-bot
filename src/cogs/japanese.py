@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from util.japaneseconnection import JapaneseConnection
+from util.apiconnection.japaneseconnection import JapaneseConnection
 from util.logger import logging, SHH_BOT
 
 logger = logging.getLogger(SHH_BOT)
