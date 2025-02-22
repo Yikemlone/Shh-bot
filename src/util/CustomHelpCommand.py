@@ -1,5 +1,6 @@
 from discord.ext import commands
 
+# TODO: Review if this is still needded
 
 class CustomHelpCommand(commands.HelpCommand):
 
