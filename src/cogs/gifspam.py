@@ -1,7 +1,7 @@
 import random
 import discord
 from discord.ext import commands
-from util.giphyconnection import GiphyConnection
+from util.apiconnection.giphyconnection import GiphyConnection
 from util.util import user_has_role, is_moderator
 from util.logger import logging, SHH_BOT
 

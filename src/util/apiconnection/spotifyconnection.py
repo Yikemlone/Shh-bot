@@ -4,7 +4,7 @@ import aiohttp
 import dotenv
 import requests
 from urllib import parse
-from util.apiconnection import APIConnection
+from util.apiconnection.apiconnection import APIConnection
 from util.logger import logging, SHH_BOT
 
 logger = logging.getLogger(SHH_BOT)

@@ -3,10 +3,13 @@ import discord
 import os
 import asyncio
 from discord.ext import commands
-from util.logger import logging
+import discord.ext
+import discord.ext.commands
+from util.logger import logging, SHH_BOT
 from util.util import is_guild_owner
+from util.exceptionhandler import on_command_errors
 
-logger = logging.getLogger("shh-bot")
+logger = logging.getLogger(SHH_BOT)
 
 # Define the intents, this is required for the bot to work
 intents = discord.Intents.all()
@@ -80,6 +83,7 @@ async def reload(interaction : discord.Interaction, extension : str):
 async def on_ready():
     logger.info(f"Bot is ready. Logged in as {bot.user}")
     await bot.change_presence(activity=discord.Game("fiddles"), status=discord.Status.do_not_disturb)
+    bot.tree.on_error = on_command_errors
 
     try:
         synced = await bot.tree.sync()  # Syncs slash commands globally
