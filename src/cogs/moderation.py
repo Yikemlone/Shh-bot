@@ -1,4 +1,4 @@
-import discord
+from discord import app_commands, Interaction
 from discord.ext import commands
 from util.logger import logging, SHH_BOT
 
@@ -11,10 +11,10 @@ class Moderation(commands.Cog):
         self.bot = bot
 
 
-    @discord.app_commands.command(name="clear", description="Clears the chat")
-    @discord.app_commands.describe(amount="The amount of messages to clear")
-    @discord.app_commands.guild_only()
-    async def clear(self, interaction : discord.Interaction, amount : int = 6): 
+    @app_commands.command(name="clear", description="Clears the chat")
+    @app_commands.describe(amount="The amount of messages to clear")
+    @app_commands.guild_only()
+    async def clear(self, interaction : Interaction, amount : int = 6): 
         await interaction.channel.purge(limit=amount)
         await interaction.response.send_message(f"✅ Cleared {amount} messages.", ephemeral=True)
 

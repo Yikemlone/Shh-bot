@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord
+from discord import Message, Interaction, Member, utils
 from util.logger import logging, SHH_BOT
 
 logger = logging.getLogger(SHH_BOT)
@@ -12,7 +12,7 @@ class Events(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before : discord.Message, after : discord.Message):
+    async def on_message_edit(self, before : Message, after : Message):
         """This will send a message of the contents of the before and after of a message edit"""
         if before.author.bot or after.author.bot:
             return
@@ -29,22 +29,22 @@ class Events(commands.Cog):
 
 
     @commands.Cog.listener()
-    async def on_member_join(self, member : discord.Member):
+    async def on_member_join(self, member : Member):
         """ When a new member joins, posts a message in chat"""
         try:
             logger.info(f"{member} has joined the server.")
-            channel = discord.utils.get(member.guild.text_channels, name=self.join_channel)
+            channel = utils.get(member.guild.text_channels, name=self.join_channel)
             await channel.send(f"{member.mention} has joined the server :).")
         except Exception as e:
             logger.error(e)
 
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member : discord.Member):
+    async def on_member_remove(self, member : Member):
         """ When a member leavs, posts a message in chat"""
         try:
             logger.info(f"{member} has left the server.")
-            channel = discord.utils.get(member.guild.text_channels, name=self.join_channel)
+            channel = utils.get(member.guild.text_channels, name=self.join_channel)
             await channel.send(f"{member.mention} has left the server :(.")
         except Exception as e:
             logger.error(e)
