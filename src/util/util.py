@@ -1,4 +1,4 @@
-from discord import Interaction, DMChannel, GroupChannel, Member
+from discord import Interaction, Member
 from util.logger import logging, SHH_BOT
 
 logger = logging.getLogger(SHH_BOT)
