@@ -152,7 +152,6 @@ class Music(commands.Cog):
             else:
                 self.queue_manager.set_current_song(song_details)
 
-            logger.debug(f"Playing {song_details['name']} by {song_details['song']}.")
             self.play_current_song(song_details["URL"]) 
             
             return f"{interaction.user.mention} now playing **{song_details['song']}** by **{song_details['name']}**. {song_details["URL"]}"
@@ -169,6 +168,7 @@ class Music(commands.Cog):
 
 
     def after_playback(self, error):
+        """Will be called after the current song has finished playing."""
         if error:
             logger.error(f"Playback error: {error}")
         
