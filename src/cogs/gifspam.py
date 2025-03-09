@@ -1,7 +1,7 @@
 import random
-import discord
+from discord import app_commands, Interaction
 from discord.ext import commands
-from util.giphyconnection import GiphyConnection
+from util.apiconnection.giphyconnection import GiphyConnection
 from util.util import user_has_role, is_moderator
 from util.logger import logging, SHH_BOT
 
@@ -26,8 +26,8 @@ class GifSpam(commands.Cog):
             await self.post_gif(message)
 
 
-    @discord.app_commands.command(name="gif_time", description="This toggles the bot on and off from posting gifs.")
-    async def gif(self, interaction: discord.Interaction):
+    @app_commands.command(name="gif_time", description="This toggles the bot on and off from posting gifs.")
+    async def gif(self, interaction: Interaction):
         """Toggles the bot on and off from posting gifs."""
 
         if not user_has_role(interaction, self.gif_role) and not is_moderator(interaction.user):

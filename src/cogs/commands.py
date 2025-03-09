@@ -1,7 +1,7 @@
 import asyncio
 import random
 import os
-import discord
+from discord import app_commands, Interaction
 from discord.ext import commands
 from util.util import user_has_role
 from util.logger import logging, SHH_BOT
@@ -19,14 +19,14 @@ class BasicCommands(commands.Cog):
         self.file = None
 
 
-    @discord.app_commands.command(name="ping", description="Check the latency of the bot.")
-    async def _ping(self, interaction: discord.Interaction):
+    @app_commands.command(name="ping", description="Check the latency of the bot.")
+    async def _ping(self, interaction: Interaction):
         await interaction.response.send_message(f"Pong! {round(self.bot.latency * 1000)}ms")
 
 
-    @discord.app_commands.command(name="8_ball", description="Ask a question and the bot will answer.")
-    @discord.app_commands.describe(question="The question you want to ask the bot.")
-    async def _8ball(self, interaction: discord.Interaction, question: str):
+    @app_commands.command(name="8_ball", description="Ask a question and the bot will answer.")
+    @app_commands.describe(question="The question you want to ask the bot.")
+    async def _8ball(self, interaction: Interaction, question: str):
         """Responds with a random answer from the 8-ball list."""
         try:
             file_path = os.path.join(self.resource_path, self.text_files_folder, self._8_ball_file)
@@ -47,8 +47,8 @@ class BasicCommands(commands.Cog):
             await interaction.response.send_message("Oops, something went wrong, try again later", ephemeral=True)
 
 
-    @discord.app_commands.command(name="ez", description="This is for a monkey.")
-    async def ez(self, interaction: discord.Interaction):
+    @app_commands.command(name="ez", description="This is for a monkey.")
+    async def ez(self, interaction: Interaction):
         """Will respond with a message in chat. This is meant for one person only."""
         if interaction.user.global_name != os.getenv('MONKEY'):
             await interaction.response.send_message(f"{interaction.user.mention} you're not a monkey, go away.")
@@ -57,8 +57,8 @@ class BasicCommands(commands.Cog):
         await interaction.response.send_message("ggez no re, bot :)")
 
 
-    @discord.app_commands.command(name="spam", description="This will spam the chat with the Bee Movie script.")
-    async def spam(self, interaction: discord.Interaction):
+    @app_commands.command(name="spam", description="This will spam the chat with the Bee Movie script.")
+    async def spam(self, interaction: Interaction):
         """Spams the chat with the Bee Movie script, if the user has the Spammer role."""
         userHasRole = user_has_role(interaction, self.spammer_role_name)
         await interaction.response.defer()
@@ -88,8 +88,8 @@ class BasicCommands(commands.Cog):
             await interaction.followup.send(f"Oops, something went wrong...try again later", ephemeral=True)
 
 
-    @discord.app_commands.command(name="stop_spam", description="This will stop the spam.")
-    async def stop_spam(self, interaction: discord.Interaction):
+    @app_commands.command(name="stop_spam", description="This will stop the spam.")
+    async def stop_spam(self, interaction: Interaction):
         """Stops the spamming process."""
         
         if hasattr(self, "spamming") and self.spamming:
@@ -99,25 +99,13 @@ class BasicCommands(commands.Cog):
             await interaction.response.send_message("❌ There is no spam currently running.", ephemeral=True)
 
 
-    @discord.app_commands.command(name="type", description="This is a test typing command.")
-    async def _type(self, interaction: discord.Interaction):
-
-        messages = {
-            "avatar": interaction.author.avatar_url,
-            "message": "This you?",
-            "GIF": "https://tenor.com/view/kermit-the-frog-drive-driving-gif-12873213"
-        }
-
-        for message in messages:
-            await interaction.trigger_typing()
-            await asyncio.sleep(1.5)
-            await interaction.response.send_message(messages[message])
-
     # This was used for a Minecraft server hosted on my network
     # @commands.command(aliases=["IP", "ip"])
     # async def _get_IP(self, ctx):
     #     ip = get('https://api.ipify.org').text
     #     await ctx.send(f"The server IP is: {ip}")
+
+    #TODO: Make a scale command to give a percentage of chance
 
 
 async def setup(bot):
